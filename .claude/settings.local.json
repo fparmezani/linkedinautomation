@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\content_generator\\\\prompts\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\carousel_generator\\\\templates\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\carousel_generator\\\\assets\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\linkedin_publisher\")",
+      "Bash(not exist *)"
+    ]
+  }
+}

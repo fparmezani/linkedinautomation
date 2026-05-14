@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>dotnet-bot — Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&family=Inter:wght@400;600;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0D1117;
+    color: #E6EDF3;
+    font-family: 'Inter', sans-serif;
+    padding: 40px 48px 120px;
+  }
+
+  header { margin-bottom: 40px; }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #58A6FF, #BC8CFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { font-size: 16px; color: #8B949E; margin-top: 6px; }
+
+  .lang-block { margin-bottom: 56px; }
+
+  .lang-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #30363D;
+  }
+
+  .slides-row {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-color: #30363D #161B22;
+  }
+
+  .slide-thumb { flex-shrink: 0; text-align: center; }
+  .slide-thumb img {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    border: 1px solid #30363D;
+    display: block;
+    transition: transform 0.15s;
+  }
+  .slide-thumb img:hover { transform: scale(1.03); cursor: zoom-in; }
+  .slide-thumb span {
+    display: block;
+    font-size: 13px;
+    color: #8B949E;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .post-text-box {
+    background: #161B22;
+    border: 1px solid #30363D;
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #C9D1D9;
+    white-space: pre-wrap;
+    margin-top: 20px;
+    max-width: 760px;
+  }
+
+  .post-text-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #8B949E;
+    margin-bottom: 8px;
+  }
+
+  /* Fixed bottom bar */
+  .action-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #161B22;
+    border-top: 2px solid #58A6FF;
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #E6EDF3;
+    z-index: 100;
+  }
+
+  .key {
+    background: #21262D;
+    border: 1px solid #30363D;
+    border-radius: 6px;
+    padding: 4px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: #58A6FF;
+  }
+
+  /* Lightbox */
+  #lb { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9);
+        z-index: 200; align-items: center; justify-content: center; cursor: zoom-out; }
+  #lb.open { display: flex; }
+  #lb img { max-width: 90vmin; max-height: 90vmin; border-radius: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>dotnet-bot — Preview</h1>
+  <p>Tópico: {{ topic }}</p>
+</header>
+
+<div class="lang-block">
+  <div class="lang-label">
+    <span>🇧🇷</span> Português (PT-BR)
+  </div>
+  <div class="slides-row">
+    {% for img in slides_pt %}
+    <div class="slide-thumb">
+      <img src="{{ img }}" alt="Slide {{ loop.index }}" onclick="openLb(this.src)">
+      <span>slide {{ loop.index }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div>
+    <div class="post-text-label">Texto do Post</div>
+    <div class="post-text-box">{{ post_text_pt }}</div>
+  </div>
+</div>
+
+<div class="lang-block">
+  <div class="lang-label">
+    <span>🇺🇸</span> English (EN)
+  </div>
+  <div class="slides-row">
+    {% for img in slides_en %}
+    <div class="slide-thumb">
+      <img src="{{ img }}" alt="Slide {{ loop.index }}" onclick="openLb(this.src)">
+      <span>slide {{ loop.index }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  <div>
+    <div class="post-text-label">Post Text</div>
+    <div class="post-text-box">{{ post_text_en }}</div>
+  </div>
+</div>
+
+<div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt=""></div>
+
+<div class="action-bar">
+  Volte ao terminal e pressione
+  <span class="key">ENTER</span>
+  para publicar &nbsp;|&nbsp;
+  <span class="key">Ctrl+C</span>
+  para cancelar
+</div>
+
+<script>
+function openLb(src) { document.getElementById('lb-img').src = src; document.getElementById('lb').classList.add('open'); }
+function closeLb() { document.getElementById('lb').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+</script>
+</body>
+</html>

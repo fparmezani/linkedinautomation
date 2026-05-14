@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dotnet-bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:      #0D1117;
+  --s1:      #161B22;
+  --s2:      #21262D;
+  --border:  #30363D;
+  --text:    #E6EDF3;
+  --muted:   #8B949E;
+  --blue:    #58A6FF;
+  --green:   #3FB950;
+  --purple:  #BC8CFF;
+  --red:     #FF7B72;
+  --grad:    linear-gradient(135deg, #58A6FF 0%, #BC8CFF 100%);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border);
+  background: var(--s1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.header-meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.handle { color: var(--blue); font-weight: 600; }
+
+/* ── Layout ── */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ── Topic card ── */
+.topic-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+
+.topic-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.topic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topic-name {
+  flex: 1;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.topic-counter {
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.btn-nav {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px 12px;
+  transition: border-color .15s, color .15s;
+}
+.btn-nav:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+.btn-nav:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ── Trending research card ── */
+.research-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 28px;
+  margin-bottom: 20px;
+}
+
+.research-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.research-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.btn-research {
+  background: transparent;
+  border: 1px solid var(--purple);
+  border-radius: 8px;
+  color: var(--purple);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  transition: background .15s, color .15s;
+}
+.btn-research:hover:not(:disabled) { background: var(--purple); color: #0D1117; }
+.btn-research:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Topic option list */
+.topic-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.topic-options-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 14px;
+  margin-bottom: 2px;
+}
+
+.topic-option {
+  background: var(--s2);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  user-select: none;
+}
+.topic-option:hover       { border-color: var(--blue); background: rgba(88,166,255,.05); }
+.topic-option.selected    { border-color: var(--green); background: rgba(63,185,80,.07); }
+
+.topic-rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 26px;
+  padding-top: 2px;
+}
+.topic-option.selected .topic-rank { color: var(--green); }
+
+.topic-option-body { flex: 1; }
+
+.topic-option-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.topic-option-angle {
+  font-size: 13px;
+  color: var(--blue);
+  font-style: italic;
+  margin-bottom: 5px;
+}
+
+.topic-option-reasoning {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.topic-option-sources {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+
+.source-pill {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 2px 9px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.selected-indicator {
+  font-size: 18px;
+  color: var(--green);
+  flex-shrink: 0;
+  padding-top: 1px;
+  display: none;
+}
+.topic-option.selected .selected-indicator { display: block; }
+
+/* Selected topic banner */
+.selected-topic-banner {
+  background: rgba(63,185,80,.1);
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.selected-topic-banner-text {
+  font-size: 14px;
+  color: var(--green);
+  font-weight: 600;
+}
+.selected-topic-banner-name {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 700;
+}
+.btn-clear-topic {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  transition: border-color .15s, color .15s;
+}
+.btn-clear-topic:hover { border-color: var(--red); color: var(--red); }
+
+/* ── Generate button ── */
+.generate-wrap {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.btn-generate {
+  background: var(--grad);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 18px 56px;
+  transition: opacity .2s, transform .15s;
+}
+.btn-generate:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+.btn-generate:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── Progress ── */
+#progress-section { margin-bottom: 40px; }
+
+.progress-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 15px;
+  color: var(--muted);
+  transition: color .3s;
+}
+
+.step.done  { color: var(--green); }
+.step.active { color: var(--text); }
+
+.step-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: background .3s, border-color .3s;
+}
+
+.step.done  .step-icon { background: var(--green); border-color: var(--green); color: #0D1117; }
+.step.active .step-icon { border-color: var(--blue); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { display: inline-block; animation: spin 1s linear infinite; }
+
+/* ── Preview ── */
+#preview-section { }
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.preview-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.preview-topic {
+  font-size: 13px;
+  color: var(--muted);
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+}
+
+.lang-block {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.lang-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-title .flag { font-size: 20px; }
+
+/* Slides row */
+.slides-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
+}
+
+.slide-thumb {
+  flex-shrink: 0;
+  cursor: zoom-in;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color .15s, transform .15s;
+}
+.slide-thumb:hover { border-color: var(--blue); transform: translateY(-2px); }
+.slide-thumb img { display: block; width: 160px; height: 160px; object-fit: cover; }
+
+/* Post text */
+.post-text-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+textarea.post-text {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 130px;
+  padding: 14px 16px;
+  resize: vertical;
+  transition: border-color .15s;
+}
+textarea.post-text:focus { outline: none; border-color: var(--blue); }
+
+/* ── Publish button ── */
+.publish-wrap {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.btn-publish {
+  background: transparent;
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  color: var(--green);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 16px 52px;
+  transition: background .2s, color .2s, transform .15s;
+}
+.btn-publish:hover:not(:disabled) {
+  background: var(--green);
+  color: #0D1117;
+  transform: translateY(-1px);
+}
+.btn-publish:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error   { border-color: var(--red);   color: var(--red); }
+
+/* ── Lightbox ── */
+#lb {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+#lb.open { display: flex; }
+#lb img { max-width: 88vmin; max-height: 88vmin; border-radius: 12px; box-shadow: 0 0 60px rgba(0,0,0,.8); }
+
+/* ── Utilities ── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">&lt;/&gt; dotnet-bot</div>
+  <div class="header-meta">by <span class="handle">{{ author_handle }}</span></div>
+</header>
+
+<main>
+
+  <!-- ── CARD ÚNICO DE SELEÇÃO DE TÓPICO ── -->
+  <div class="topic-card" id="topic-selector-card">
+
+    <!-- Cabeçalho -->
+    <div class="topic-label">&#128221; Escolha o topico do post</div>
+
+    <!-- 1. Busca por tendencias -->
+    <div class="research-header" style="margin-bottom:0;">
+      <span style="font-size:14px;color:var(--muted);">Buscar tópicos em alta agora:</span>
+      <button class="btn-research" id="btn-research" onclick="startResearch()">
+        &#128269; Buscar Tendencias
+      </button>
+    </div>
+
+    <!-- Spinner de loading -->
+    <div id="research-loading" class="hidden" style="color:var(--muted);font-size:14px;margin-top:14px;">
+      <span class="spinner">&#9696;</span>&nbsp; Consultando dev.to, Reddit, MS DevBlog, Hacker News...
+    </div>
+
+    <!-- Lista de 10 opções -->
+    <div id="topic-options" class="topic-options hidden"></div>
+
+    <!-- Divisor -->
+    <div id="queue-divider" style="display:flex;align-items:center;gap:12px;margin:18px 0 14px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="font-size:12px;color:var(--muted);white-space:nowrap;">ou escolha da fila manual</span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <!-- 2. Fila manual -->
+    <div class="topic-row">
+      <button class="btn-nav" id="btn-prev" title="Topico anterior" onclick="prevTopic()">&#8592;</button>
+      <div style="flex:1;text-align:center;">
+        <div class="topic-name" id="topic-name" style="font-size:16px;">Carregando...</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;" id="topic-counter">— / —</div>
+      </div>
+      <button class="btn-nav" id="btn-next" title="Proximo topico" onclick="nextTopic()">&#8594;</button>
+      <button class="btn-research" style="margin-left:8px;" onclick="selectQueueTopic()">Usar este</button>
+    </div>
+
+    <!-- Banner: tópico confirmado para geração -->
+    <div id="selected-topic-banner" class="selected-topic-banner hidden" style="margin-top:18px;">
+      <div>
+        <div class="selected-topic-banner-text">&#9889; Vai ser gerado:</div>
+        <div class="selected-topic-banner-name" id="selected-topic-banner-name"></div>
+      </div>
+      <button class="btn-clear-topic" onclick="clearSelection()">Trocar</button>
+    </div>
+
+  </div>
+
+  <!-- Generate -->
+  <div class="generate-wrap">
+    <button class="btn-generate" id="btn-generate" onclick="startGenerate()" disabled>
+      &#9889; Gerar Post
+    </button>
+    <div id="generate-hint" style="font-size:13px;color:var(--muted);margin-top:10px;">
+      Selecione um topico acima para continuar
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div id="progress-section" class="hidden">
+    <div class="progress-card">
+      <div class="steps">
+        <div class="step" id="step-1">
+          <div class="step-icon" id="icon-1">1</div>
+          <span>Gerando PT-BR com Claude</span>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step-icon" id="icon-2">2</div>
+          <span>Gerando EN com Claude</span>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step-icon" id="icon-3">3</div>
+          <span>Renderizando slides PT-BR</span>
+        </div>
+        <div class="step" id="step-4">
+          <div class="step-icon" id="icon-4">4</div>
+          <span>Renderizando slides EN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div id="preview-section" class="hidden">
+    <div class="preview-header">
+      <div class="preview-title">Preview</div>
+      <span class="preview-topic" id="preview-topic-label"></span>
+    </div>
+
+    <!-- PT-BR -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127463;&#127479;</span> Portugues (PT-BR)</div>
+      <div class="slides-row" id="slides-pt"></div>
+      <div class="post-text-label">Texto do Post</div>
+      <textarea class="post-text" id="text-pt" rows="6"></textarea>
+    </div>
+
+    <!-- EN -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127482;&#127480;</span> English (EN)</div>
+      <div class="slides-row" id="slides-en"></div>
+      <div class="post-text-label">Post Text</div>
+      <textarea class="post-text" id="text-en" rows="6"></textarea>
+    </div>
+
+    <!-- Publish -->
+    <div class="publish-wrap">
+      <button class="btn-publish" id="btn-publish" onclick="publish()">
+        Publicar no LinkedIn
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- Lightbox -->
+<div id="lb" onclick="closeLb()"><img id="lb-img" src="" alt="Slide"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let queueTopics       = [];   // fila estática do JSON
+let queueIndex        = 0;
+let selectedTopic     = null; // { id, topic, _trending? } — o que VAI ser gerado
+let currentJobId      = null;
+let pollTimer         = null;
+let researchPollTimer = null;
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const r    = await fetch('/api/topics');
+    const data = await r.json();
+    queueTopics = data.available || [];
+    updateQueueUI();
+  } catch (e) {
+    showToast('Erro ao carregar topicos', 'error');
+  }
+}
+
+// ── Fila manual ───────────────────────────────────────────────────────────────
+function updateQueueUI() {
+  if (!queueTopics.length) {
+    document.getElementById('topic-name').textContent = 'Fila vazia';
+    document.getElementById('topic-counter').textContent = '0 / 0';
+    document.getElementById('btn-prev').disabled = true;
+    document.getElementById('btn-next').disabled = true;
+    return;
+  }
+  const t = queueTopics[queueIndex];
+  document.getElementById('topic-name').textContent = t.topic;
+  document.getElementById('topic-counter').textContent = `${queueIndex + 1} / ${queueTopics.length}`;
+  document.getElementById('btn-prev').disabled = queueIndex === 0;
+  document.getElementById('btn-next').disabled = queueIndex === queueTopics.length - 1;
+}
+
+function prevTopic() { if (queueIndex > 0) { queueIndex--; updateQueueUI(); } }
+function nextTopic() { if (queueIndex < queueTopics.length - 1) { queueIndex++; updateQueueUI(); } }
+
+function selectQueueTopic() {
+  if (!queueTopics.length) return;
+  const t = queueTopics[queueIndex];
+  confirmSelection({ id: t.id, topic: t.topic, _trending: false });
+}
+
+// ── Seleção confirmada ────────────────────────────────────────────────────────
+function confirmSelection(t) {
+  selectedTopic = t;
+  document.getElementById('selected-topic-banner-name').textContent = t.topic;
+  show('selected-topic-banner');
+  // Habilita o botão Gerar
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = false;
+  document.getElementById('generate-hint').style.display = 'none';
+  btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearSelection() {
+  selectedTopic = null;
+  hide('selected-topic-banner');
+  document.querySelectorAll('.topic-option').forEach(c => c.classList.remove('selected'));
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  document.getElementById('generate-hint').style.display = '';
+}
+
+// ── Generate ─────────────────────────────────────────────────────────────────
+async function startGenerate() {
+  if (!selectedTopic) return;
+
+  const topic = selectedTopic;
+  setBusy(true);
+  resetSteps();
+  show('progress-section');
+  hide('preview-section');
+
+  try {
+    const payload = { topic_id: topic.id };
+    if (topic._trending) payload.topic_name = topic.topic;
+    hide('topic-selector-card');
+    const r = await fetch('/api/generate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro desconhecido');
+    currentJobId = data.job_id;
+    pollTimer = setInterval(() => pollStatus(currentJobId), 1500);
+  } catch (e) {
+    showToast(e.message, 'error');
+    setBusy(false);
+    hide('progress-section');
+  }
+}
+
+// ── Poll ─────────────────────────────────────────────────────────────────────
+async function pollStatus(jobId) {
+  try {
+    const r    = await fetch(`/api/status/${jobId}`);
+    const data = await r.json();
+
+    updateSteps(data.step || 0);
+
+    if (data.status === 'ready') {
+      clearInterval(pollTimer);
+      setBusy(false);
+      showPreview(data);
+    } else if (data.status === 'error') {
+      clearInterval(pollTimer);
+      setBusy(false);
+      hide('progress-section');
+      showToast('Erro: ' + data.error, 'error');
+    }
+  } catch { /* network hiccup, keep polling */ }
+}
+
+// ── Steps ─────────────────────────────────────────────────────────────────────
+function resetSteps() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`step-${i}`).className = 'step';
+    document.getElementById(`icon-${i}`).innerHTML = i;
+  }
+}
+
+function updateSteps(step) {
+  for (let i = 1; i <= 4; i++) {
+    const el   = document.getElementById(`step-${i}`);
+    const icon = document.getElementById(`icon-${i}`);
+    if (i < step)       { el.className = 'step done';   icon.textContent = '✓'; }
+    else if (i === step){ el.className = 'step active';  icon.innerHTML = '<span class="spinner">&#9696;</span>'; }
+    else                { el.className = 'step';         icon.textContent = i; }
+  }
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
+function showPreview(data) {
+  hide('progress-section');
+
+  document.getElementById('preview-topic-label').textContent = data.topic;
+  document.getElementById('text-pt').value = data.post_text_pt;
+  document.getElementById('text-en').value = data.post_text_en;
+
+  renderSlides('slides-pt', data.slides_pt);
+  renderSlides('slides-en', data.slides_en);
+
+  show('preview-section');
+  document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderSlides(containerId, urls) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  (urls || []).forEach((src, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'slide-thumb';
+    wrap.title = `Slide ${i + 1}`;
+    wrap.onclick = () => openLb(src);
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Slide ${i + 1}`;
+    wrap.appendChild(img);
+    el.appendChild(wrap);
+  });
+}
+
+// ── Publish ───────────────────────────────────────────────────────────────────
+async function publish() {
+  if (!currentJobId) return;
+
+  const btn = document.getElementById('btn-publish');
+  btn.disabled = true;
+  btn.textContent = 'Publicando...';
+
+  try {
+    const r    = await fetch('/api/publish', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        job_id:       currentJobId,
+        post_text_pt: document.getElementById('text-pt').value,
+        post_text_en: document.getElementById('text-en').value,
+      })
+    });
+    const data = await r.json();
+
+    if (!r.ok) throw new Error(data.error || 'Erro ao publicar');
+
+    btn.textContent = 'Publicado!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#0D1117';
+    showToast('Posts publicados no LinkedIn!', 'success');
+
+    // Remove topico usado da fila e reseta estado
+    setTimeout(() => {
+      if (selectedTopic && !selectedTopic._trending) {
+        const idx = queueTopics.findIndex(x => x.id === selectedTopic.id);
+        if (idx >= 0) queueTopics.splice(idx, 1);
+        if (queueIndex >= queueTopics.length) queueIndex = Math.max(0, queueTopics.length - 1);
+        updateQueueUI();
+      }
+      clearSelection();
+      hide('preview-section');
+      currentJobId = null;
+      btn.disabled = false;
+      btn.textContent = 'Publicar no LinkedIn';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+
+  } catch (e) {
+    showToast(e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Publicar no LinkedIn';
+  }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function setBusy(busy) {
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = busy;
+  btn.textContent = busy ? 'Gerando...' : '⚡ Gerar Post';
+  if (!busy) show('topic-selector-card');
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function openLb(src) { document.getElementById('lb-img').src = src; document.getElementById('lb').classList.add('open'); }
+function closeLb()   { document.getElementById('lb').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+// ── Research ─────────────────────────────────────────────────────────────────
+let selectedTrendingTopic = null;
+
+async function startResearch() {
+  const btn = document.getElementById('btn-research');
+  btn.disabled = true;
+  btn.textContent = 'Buscando...';
+
+  // Reset: esconde lista anterior e banner, mas mantém topico selecionado ate nova escolha
+  hide('topic-options');
+  show('research-loading');
+
+  if (researchPollTimer) { clearInterval(researchPollTimer); researchPollTimer = null; }
+
+  try {
+    const r    = await fetch('/api/research', { method: 'POST' });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro');
+    researchPollTimer = setInterval(() => pollResearch(data.job_id), 2000);
+  } catch (e) {
+    hide('research-loading');
+    btn.disabled = false;
+    btn.textContent = '🔍 Buscar Tendencias';
+    showToast('Erro na pesquisa: ' + e.message, 'error');
+  }
+}
+
+async function pollResearch(jobId) {
+  try {
+    const r    = await fetch(`/api/research/status/${jobId}`);
+    const data = await r.json();
+
+    if (data.status === 'done') {
+      clearInterval(researchPollTimer);
+      researchPollTimer = null;
+      hide('research-loading');
+      showResearchResult(data);
+      const btn = document.getElementById('btn-research');
+      btn.disabled = false;
+      btn.textContent = '🔄 Buscar Novamente';
+    } else if (data.status === 'error') {
+      clearInterval(researchPollTimer);
+      researchPollTimer = null;
+      hide('research-loading');
+      showToast('Erro: ' + data.error, 'error');
+      const btn = document.getElementById('btn-research');
+      btn.disabled = false;
+      btn.textContent = '🔍 Buscar Tendencias';
+    }
+  } catch { /* continua polling */ }
+}
+
+function showResearchResult(data) {
+  const container = document.getElementById('topic-options');
+  container.innerHTML = '';
+
+  const topicList = data.topics || [];
+  if (!topicList.length) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">Nenhum topico retornado. Tente novamente.</div>';
+    show('topic-options');
+    return;
+  }
+
+  topicList.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'topic-option';
+
+    const sources = (t.sources || []).map(s =>
+      `<span class="source-pill">${escHtml(s)}</span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="topic-rank">#${t.rank}</div>
+      <div class="topic-option-body">
+        <div class="topic-option-name">${escHtml(t.topic)}</div>
+        <div class="topic-option-angle">${escHtml(t.angle || '')}</div>
+        <div class="topic-option-reasoning">${escHtml(t.reasoning || '')}</div>
+        <div class="topic-option-sources">${sources}</div>
+      </div>
+      <div class="selected-indicator">&#10003;</div>
+    `;
+
+    // Marca se já estava selecionado
+    if (selectedTopic && selectedTopic._trending && selectedTopic.topic === t.topic) {
+      card.classList.add('selected');
+    }
+
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.topic-option').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      confirmSelection({ id: 0, topic: t.topic, _trending: true });
+    });
+    container.appendChild(card);
+  });
+
+  show('topic-options');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

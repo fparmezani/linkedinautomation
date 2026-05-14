@@ -1,0 +1,108 @@
+{
+  "used": [
+    { "id": 1, "topic": "Minimal APIs in ASP.NET Core" },
+    { "id": 2, "topic": "C# Records and Pattern Matching" }
+  ],
+  "available": [
+    {
+      "id": 10,
+      "topic": "GitHub Copilot tips for C# developers",
+      "niche": "AI Tools"
+    },
+    {
+      "id": 11,
+      "topic": "Semantic Kernel: building AI agents in C#",
+      "niche": "AI Framework"
+    },
+    {
+      "id": 12,
+      "topic": "Integrating OpenAI API in ASP.NET Core",
+      "niche": "AI Integration"
+    },
+    {
+      "id": 13,
+      "topic": "Prompt engineering best practices for C# devs",
+      "niche": "AI Skills"
+    },
+    {
+      "id": 14,
+      "topic": "ML.NET: machine learning without leaving .NET",
+      "niche": "ML"
+    },
+    {
+      "id": 15,
+      "topic": "Building a RAG system in C# with Semantic Kernel",
+      "niche": "AI Architecture"
+    },
+    {
+      "id": 16,
+      "topic": "AI-assisted unit test generation in Visual Studio",
+      "niche": "Productivity"
+    },
+    {
+      "id": 17,
+      "topic": "Azure OpenAI Service + .NET: from zero to endpoint",
+      "niche": "Cloud AI"
+    },
+    {
+      "id": 18,
+      "topic": "Refactoring legacy C# code with AI assistance",
+      "niche": "Productivity"
+    },
+    {
+      "id": 19,
+      "topic": "Cursor IDE vs GitHub Copilot for C# development",
+      "niche": "AI Tools"
+    },
+    {
+      "id": 20,
+      "topic": "Building a chatbot with ASP.NET Core and Claude API",
+      "niche": "AI Integration"
+    },
+    {
+      "id": 21,
+      "topic": "Vector databases in .NET: pgvector and Qdrant",
+      "niche": "AI Architecture"
+    },
+    {
+      "id": 22,
+      "topic": "Semantic Kernel plugins: extending AI with your C# code",
+      "niche": "AI Framework"
+    },
+    {
+      "id": 23,
+      "topic": "AI code review: what Copilot catches that we miss",
+      "niche": "Productivity"
+    },
+    {
+      "id": 24,
+      "topic": "Function calling with OpenAI and C# — practical guide",
+      "niche": "AI Integration"
+    },
+    {
+      "id": 25,
+      "topic": "Streaming AI responses in ASP.NET Core with IAsyncEnumerable",
+      "niche": "AI Integration"
+    },
+    {
+      "id": 26,
+      "topic": "Local LLMs in .NET with Ollama and LLamaSharp",
+      "niche": "AI Tools"
+    },
+    {
+      "id": 27,
+      "topic": "Semantic Kernel memory and embeddings explained",
+      "niche": "AI Framework"
+    },
+    {
+      "id": 28,
+      "topic": "Using AI to generate and maintain C# documentation",
+      "niche": "Productivity"
+    },
+    {
+      "id": 29,
+      "topic": "Microsoft.Extensions.AI: the new unified AI layer in .NET",
+      "niche": "AI Framework"
+    }
+  ]
+}

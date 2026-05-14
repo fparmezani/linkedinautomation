@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment — NUNCA commitar credenciais
+.env
+tokens.json
+
+# Outputs gerados (imagens dos slides)
+output/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

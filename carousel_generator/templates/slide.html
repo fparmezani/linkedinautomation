@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0D1117;
+  --surface:  #161B22;
+  --surface2: #21262D;
+  --border:   #30363D;
+  --text:     #E6EDF3;
+  --muted:    #8B949E;
+  --blue:     #58A6FF;
+  --green:    #3FB950;
+  --purple:   #BC8CFF;
+  --grad: linear-gradient(135deg, #58A6FF 0%, #BC8CFF 100%);
+}
+
+body {
+  width: 1080px;
+  height: 1080px;
+  background: var(--bg);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  position: relative;
+}
+
+.accent-bar {
+  position: absolute;
+  left: 0; top: 0;
+  width: 6px; height: 100%;
+  background: var(--grad);
+}
+
+.counter {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── COVER ─────────────────────────── */
+.cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 68px 56px 76px;
+  height: 100%;
+}
+
+.cover-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tag-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 22px;
+  font-size: 21px;
+  font-weight: 600;
+  color: var(--blue);
+  letter-spacing: 0.02em;
+}
+
+.cover-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+}
+
+.cover-eyebrow {
+  font-size: 17px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--blue);
+}
+
+.cover-title {
+  font-size: 82px;
+  font-weight: 900;
+  line-height: 1.05;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.025em;
+  max-width: 900px;
+}
+
+.cover-subtitle {
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 720px;
+}
+
+.cover-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.author-name   { font-size: 21px; font-weight: 600; color: var(--text); }
+.author-handle { font-size: 17px; color: var(--muted); margin-top: 3px; }
+
+.brand-badge {
+  background: var(--grad);
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 19px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.cover-deco {
+  position: absolute;
+  right: -20px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 320px;
+  font-weight: 900;
+  color: rgba(88,166,255,0.035);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── CONTENT ─────────────────────────── */
+.content-slide {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 52px 68px 48px 76px;
+  gap: 28px;
+}
+
+.slide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.slide-title {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  flex: 1;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.points-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+}
+
+.point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 27px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #C9D1D9;
+}
+
+.point-dot {
+  width: 8px; height: 8px; min-width: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  margin-top: 11px;
+}
+
+/* ── CODE BLOCK ─────────────────────────── */
+.code-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.code-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-r { background: #FF5F57; }
+.dot-y { background: #FFBD2E; }
+.dot-g { background: #28CA41; }
+
+.code-lang {
+  margin-left: auto;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.code-wrap pre { padding: 18px 22px; overflow: hidden; }
+.code-wrap pre code {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 21px !important;
+  line-height: 1.65 !important;
+}
+.hljs { background: transparent !important; }
+
+/* ── CODE SLIDE ─────────────────────────── */
+.code-slide {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 52px 68px 48px 76px;
+  gap: 20px;
+}
+
+.code-description {
+  font-size: 25px;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.code-slide .code-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-slide .code-wrap pre {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+}
+
+.code-slide pre code {
+  font-size: 23px !important;
+}
+
+/* ── CTA ─────────────────────────── */
+.cta-slide {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 60px 68px 56px 76px;
+}
+
+.cta-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+}
+
+.cta-icon  { font-size: 68px; line-height: 1; }
+
+.cta-title {
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1.1;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  max-width: 820px;
+}
+
+.cta-text {
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 760px;
+}
+
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hashtag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--blue);
+}
+
+/* ── SHARED FOOTER ─────────────────────────── */
+.slide-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-top: auto;
+}
+
+.footer-handle {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.footer-badge {
+  background: var(--grad);
+  border-radius: 7px;
+  padding: 5px 13px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div class="accent-bar"></div>
+
+{% if slide.type == "cover" %}
+<div class="cover-deco">.NET</div>
+<div class="cover">
+  <div class="cover-top">
+    <span class="tag-pill">{{ slide.tag }}</span>
+    <span class="counter">{{ slide.slide_num }} / {{ slide.total_slides }}</span>
+  </div>
+  <div class="cover-body">
+    <div class="cover-eyebrow">dotnet.tips</div>
+    <div class="cover-title">{{ slide.title }}</div>
+    <div class="cover-subtitle">{{ slide.subtitle }}</div>
+  </div>
+  <div class="cover-footer">
+    <div>
+      <div class="author-name">{{ author_name }}</div>
+      <div class="author-handle">{{ author_handle }}</div>
+    </div>
+    <div class="brand-badge">&lt;/&gt; .NET</div>
+  </div>
+</div>
+
+{% elif slide.type == "content" %}
+<div class="content-slide">
+  <div class="slide-header">
+    <div class="slide-title">{{ slide.title }}</div>
+    <span class="counter">{{ slide.slide_num }} / {{ slide.total_slides }}</span>
+  </div>
+  <ul class="points-list">
+    {% for point in slide.points %}
+    <li class="point-item">
+      <div class="point-dot"></div>
+      <span>{{ point }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if slide.code %}
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="code-lang">C#</span>
+    </div>
+    <pre><code class="language-csharp">{{ slide.code }}</code></pre>
+  </div>
+  {% endif %}
+  <div class="slide-footer">
+    <span class="footer-handle">{{ author_handle }}</span>
+    <span class="footer-badge">&lt;/&gt; .NET</span>
+  </div>
+</div>
+
+{% elif slide.type == "code" %}
+<div class="code-slide">
+  <div class="slide-header">
+    <div class="slide-title">{{ slide.title }}</div>
+    <span class="counter">{{ slide.slide_num }} / {{ slide.total_slides }}</span>
+  </div>
+  {% if slide.description %}
+  <div class="code-description">{{ slide.description }}</div>
+  {% endif %}
+  <div class="code-wrap">
+    <div class="code-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="code-lang">C#</span>
+    </div>
+    <pre><code class="language-csharp">{{ slide.code }}</code></pre>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-handle">{{ author_handle }}</span>
+    <span class="footer-badge">&lt;/&gt; .NET</span>
+  </div>
+</div>
+
+{% elif slide.type == "cta" %}
+<div class="cta-slide">
+  <div class="cta-body">
+    <div class="cta-icon">💡</div>
+    <div class="cta-title">{{ slide.title }}</div>
+    <div class="cta-text">{{ slide.text }}</div>
+    <div class="hashtags">
+      {% for tag in slide.hashtags %}
+      <span class="hashtag">#{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="slide-footer">
+    <div>
+      <div class="author-name">{{ author_name }}</div>
+      <div class="author-handle">{{ author_handle }} • LinkedIn</div>
+    </div>
+    <div class="brand-badge">&lt;/&gt; .NET</div>
+  </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+});
+</script>
+</body>
+</html>
