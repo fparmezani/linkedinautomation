@@ -74,9 +74,14 @@ def _run_generation(job_id: str, topic: dict):
 
 @app.route("/")
 def index():
-    return render_template("index.html",
-                           author_name=AUTHOR_NAME,
-                           author_handle=AUTHOR_HANDLE)
+    from flask import make_response
+    resp = make_response(render_template("index.html",
+                                         author_name=AUTHOR_NAME,
+                                         author_handle=AUTHOR_HANDLE))
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
 
 
 @app.route("/api/research", methods=["POST"])

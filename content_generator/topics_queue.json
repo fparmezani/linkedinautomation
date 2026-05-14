@@ -1,7 +1,18 @@
 {
   "used": [
-    { "id": 1, "topic": "Minimal APIs in ASP.NET Core" },
-    { "id": 2, "topic": "C# Records and Pattern Matching" }
+    {
+      "id": 1,
+      "topic": "Minimal APIs in ASP.NET Core"
+    },
+    {
+      "id": 2,
+      "topic": "C# Records and Pattern Matching"
+    },
+    {
+      "id": 12,
+      "topic": "Integrating OpenAI API in ASP.NET Core",
+      "niche": "AI Integration"
+    }
   ],
   "available": [
     {
@@ -13,11 +24,6 @@
       "id": 11,
       "topic": "Semantic Kernel: building AI agents in C#",
       "niche": "AI Framework"
-    },
-    {
-      "id": 12,
-      "topic": "Integrating OpenAI API in ASP.NET Core",
-      "niche": "AI Integration"
     },
     {
       "id": 13,
