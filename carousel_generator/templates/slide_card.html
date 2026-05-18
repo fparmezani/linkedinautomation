@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0D1117;
+  --surface:  #161B22;
+  --surface2: #21262D;
+  --border:   #30363D;
+  --text:     #E6EDF3;
+  --muted:    #8B949E;
+  --blue:     #58A6FF;
+  --green:    #3FB950;
+  --purple:   #BC8CFF;
+  --grad: linear-gradient(135deg, #58A6FF 0%, #BC8CFF 100%);
+}
+
+body {
+  width: 1080px;
+  height: 1080px;
+  background: var(--bg);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+  position: relative;
+}
+
+.container {
+  padding: 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ── Cover ── */
+.slide-cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 60px;
+  padding: 60px;
+  position: relative;
+}
+
+.slide-cover .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--blue);
+  padding: 8px 16px;
+  border: 1px solid var(--blue);
+  border-radius: 8px;
+  width: fit-content;
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.slide-cover h1 {
+  font-size: 66px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--text);
+  max-width: 900px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide-cover .subtitle {
+  font-size: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 700px;
+}
+
+/* ── Content ── */
+.slide-content {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.slide-content h2 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.slide-content ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.slide-content li {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text);
+  padding: 12px 16px;
+  background: rgba(88, 166, 255, 0.08);
+  border-left: 3px solid var(--blue);
+  border-radius: 6px;
+}
+
+.code-snippet {
+  margin-top: 30px;
+  padding: 16px 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  overflow-x: auto;
+}
+
+/* ── Code Slide ── */
+.slide-code {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  gap: 30px;
+}
+
+.slide-code .card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.slide-code h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.slide-code .description {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.slide-code pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 16px 20px;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 12px;
+}
+
+.slide-code code {
+  color: var(--text);
+}
+
+/* ── CTA ── */
+.slide-cta {
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  gap: 40px;
+}
+
+.slide-cta .card {
+  background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(188, 140, 255, 0.1));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 50px;
+}
+
+.slide-cta h4 {
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.slide-cta .text {
+  font-size: 17px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.hashtag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--blue);
+  padding: 4px 8px;
+  background: rgba(88, 166, 255, 0.1);
+  border-radius: 4px;
+}
+
+.counter {
+  position: absolute;
+  bottom: 40px;
+  left: 60px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.author {
+  position: absolute;
+  bottom: 40px;
+  right: 60px;
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.author .handle {
+  color: var(--blue);
+}
+</style>
+</head>
+<body>
+
+{% if slide.type == "cover" %}
+<div class="slide-cover">
+  <div>
+    <span class="tag">{{ slide.tag }}</span>
+    <h1>{{ slide.title }}</h1>
+  </div>
+  <p class="subtitle">{{ slide.subtitle }}</p>
+</div>
+
+{% elif slide.type == "content" %}
+<div class="slide-content">
+  <h2>{{ slide.title }}</h2>
+  <ul>
+    {% for point in slide.points %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ul>
+  {% if slide.code %}
+  <div class="code-snippet">{{ slide.code }}</div>
+  {% endif %}
+</div>
+
+{% elif slide.type == "code" %}
+<div class="slide-code">
+  <div class="card">
+    <h3>{{ slide.title }}</h3>
+    <p class="description">{{ slide.description }}</p>
+  </div>
+  <pre><code class="language-csharp">{{ slide.code }}</code></pre>
+  <script>hljs.highlightAll();</script>
+</div>
+
+{% elif slide.type == "cta" %}
+<div class="slide-cta">
+  <div class="card">
+    <h4>{{ slide.title }}</h4>
+    <p class="text">{{ slide.text }}</p>
+  </div>
+  <div class="hashtags">
+    {% for tag in slide.hashtags %}
+    <span class="hashtag">#{{ tag }}</span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="counter">{{ page_num }}/{{ total_pages }}</div>
+<div class="author">by <span class="handle">{{ author_handle }}</span></div>
+
+</body>
+</html>

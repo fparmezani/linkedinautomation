@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1200px;
+  height: 627px;
+  background: #0D1117;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #E6EDF3;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Background grid pattern */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(88,166,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88,166,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Gradient glow blobs */
+.blob-left {
+  position: absolute;
+  left: -120px;
+  top: -80px;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(88,166,255,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.blob-right {
+  position: absolute;
+  right: -60px;
+  bottom: -80px;
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(188,140,255,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Top gradient bar */
+.accent-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #58A6FF 0%, #BC8CFF 50%, #3FB950 100%);
+}
+
+/* Main layout */
+.container {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 64px;
+}
+
+/* Tag pill */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #58A6FF;
+  padding: 6px 14px;
+  border: 1px solid rgba(88,166,255,0.4);
+  border-radius: 20px;
+  background: rgba(88,166,255,0.08);
+  width: fit-content;
+}
+
+/* Headline block */
+.headline-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.headline {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.15;
+  max-width: 820px;
+  background: linear-gradient(135deg, #E6EDF3 0%, #8B949E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subheadline {
+  font-size: 18px;
+  color: #8B949E;
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.author-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.author-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #58A6FF, #BC8CFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0D1117;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.author-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #E6EDF3;
+}
+
+.author-handle {
+  font-size: 12px;
+  color: #58A6FF;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Reading time badge */
+.reading-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(63,185,80,0.08);
+  border: 1px solid rgba(63,185,80,0.3);
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3FB950;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Right side decoration */
+.code-decoration {
+  position: absolute;
+  right: 64px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.06;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #58A6FF;
+  white-space: pre;
+  text-align: right;
+  pointer-events: none;
+  max-width: 300px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="blob-left"></div>
+<div class="blob-right"></div>
+<div class="accent-bar"></div>
+
+<div class="container">
+
+  <!-- Top: tag -->
+  <div>
+    <span class="tag">&#128196; {{ cover_tag }}</span>
+  </div>
+
+  <!-- Center: headline + subheadline -->
+  <div class="headline-block">
+    <div class="headline">{{ headline }}</div>
+    <div class="subheadline">{{ subheadline }}</div>
+  </div>
+
+  <!-- Bottom: author + reading time -->
+  <div class="footer">
+    <div class="author-block">
+      <div class="author-avatar">{{ author_initials }}</div>
+      <div class="author-info">
+        <div class="author-name">{{ author_name }}</div>
+        <div class="author-handle">{{ author_handle }}</div>
+      </div>
+    </div>
+    <div class="reading-time">
+      &#9202; {{ reading_time_min }} min read
+    </div>
+  </div>
+
+</div>
+
+<!-- Decorative code in background -->
+<div class="code-decoration">var kernel = Kernel.CreateBuilder()
+  .AddAzureOpenAIChatCompletion(...)
+  .Build();
+
+var result = await kernel
+  .InvokeAsync&lt;string&gt;(
+    "Summarize", context
+  );
+
+[KernelFunction]
+public async Task&lt;string&gt;
+  Analyze(string input)
+{ return await Process(input); }</div>
+
+</body>
+</html>

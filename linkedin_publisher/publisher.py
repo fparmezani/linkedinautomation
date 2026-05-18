@@ -74,6 +74,58 @@ def _create_post(author_urn: str, commentary: str,
     return resp.json().get("id", "unknown")
 
 
+def _create_article_post(author_urn: str, commentary: str,
+                         asset_urn: str, headline: str, token: str) -> str:
+    """Publish a long-form article post with a cover image."""
+    payload = {
+        "author": author_urn,
+        "lifecycleState": "PUBLISHED",
+        "specificContent": {
+            "com.linkedin.ugc.ShareContent": {
+                "shareCommentary": {"text": commentary},
+                "shareMediaCategory": "IMAGE",
+                "media": [
+                    {
+                        "status": "READY",
+                        "description": {"text": headline},
+                        "media": asset_urn,
+                        "title": {"text": headline},
+                    }
+                ],
+            }
+        },
+        "visibility": {
+            "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+        },
+    }
+    resp = requests.post(
+        f"{API_BASE}/v2/ugcPosts",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json=payload,
+    )
+    resp.raise_for_status()
+    return resp.json().get("id", "unknown")
+
+
+def publish_article(cover_png_path: str, post_text: str, headline: str) -> str:
+    """Upload cover image and publish article post on LinkedIn."""
+    author_urn = os.getenv("LINKEDIN_AUTHOR_URN", "").strip()
+    if not author_urn:
+        raise RuntimeError("LINKEDIN_AUTHOR_URN not set in .env")
+
+    token = get_access_token()
+
+    print("    Uploading cover image...", end=" ", flush=True)
+    upload_url, asset_urn = _register_image(author_urn, token)
+    _upload_image(cover_png_path, upload_url, token)
+    print("ok")
+
+    print("    Creating article post...", end=" ", flush=True)
+    post_id = _create_article_post(author_urn, post_text, asset_urn, headline, token)
+    print("ok")
+    return post_id
+
+
 def publish_carousel(png_paths: list, post_text: str, title: str) -> str:
     author_urn = os.getenv("LINKEDIN_AUTHOR_URN", "").strip()
     if not author_urn:

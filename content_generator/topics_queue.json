@@ -12,6 +12,11 @@
       "id": 12,
       "topic": "Integrating OpenAI API in ASP.NET Core",
       "niche": "AI Integration"
+    },
+    {
+      "id": 16,
+      "topic": "AI-assisted unit test generation in Visual Studio",
+      "niche": "Productivity"
     }
   ],
   "available": [
@@ -39,11 +44,6 @@
       "id": 15,
       "topic": "Building a RAG system in C# with Semantic Kernel",
       "niche": "AI Architecture"
-    },
-    {
-      "id": 16,
-      "topic": "AI-assisted unit test generation in Visual Studio",
-      "niche": "Productivity"
     },
     {
       "id": 17,

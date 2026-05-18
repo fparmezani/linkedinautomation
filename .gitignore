@@ -10,6 +10,7 @@ tokens.json
 
 # Outputs gerados (imagens dos slides)
 output/
+template_previews/
 
 # VS Code
 .vscode/

@@ -26,8 +26,8 @@ async def _render_slides(slides_html: list, output_dir: str) -> list:
     return paths
 
 
-def _build_slides_html(carousel_data: dict, author_name: str, author_handle: str) -> list:
-    template = _jinja.get_template("slide.html")
+def _build_slides_html(carousel_data: dict, author_name: str, author_handle: str, template_name: str = "slide.html") -> list:
+    template = _jinja.get_template(template_name)
     slides = carousel_data["slides"]
     total = len(slides)
     result = []
@@ -48,9 +48,9 @@ def _create_pdf(png_paths: list, output_path: str):
 
 
 def render_carousel(carousel_data: dict, lang: str, output_dir: str,
-                    author_name: str, author_handle: str) -> tuple:
+                    author_name: str, author_handle: str, template: str = "slide.html") -> tuple:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
-    slides_html = _build_slides_html(carousel_data, author_name, author_handle)
+    slides_html = _build_slides_html(carousel_data, author_name, author_handle, template_name=template)
     png_paths = asyncio.run(_render_slides(slides_html, output_dir))
     pdf_path = os.path.join(output_dir, f"carousel_{lang}.pdf")
     _create_pdf(png_paths, pdf_path)

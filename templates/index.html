@@ -508,6 +508,219 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
 #lb.open { display: flex; }
 #lb img { max-width: 88vmin; max-height: 88vmin; border-radius: 12px; box-shadow: 0 0 60px rgba(0,0,0,.8); }
 
+/* ── Content Type Switcher ── */
+.content-type-switcher {
+  display: flex;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 28px;
+}
+
+.content-type-btn {
+  flex: 1;
+  padding: 10px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.content-type-btn.active {
+  background: var(--s1);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+
+.content-type-btn.active.post  { color: var(--blue); }
+.content-type-btn.active.article { color: var(--purple); }
+
+/* ── Article Preview ── */
+.article-preview-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.article-cover-img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+.article-body {
+  padding: 28px 32px;
+}
+
+.article-headline {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.article-subheadline {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.article-meta .reading-time {
+  color: var(--green);
+}
+
+.article-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.article-section-heading {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-left: 14px;
+  border-left: 3px solid var(--purple);
+}
+
+.article-section-body {
+  font-size: 14px;
+  color: #C9D1D9;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.article-code-block {
+  background: #161B22;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #E6EDF3;
+  overflow-x: auto;
+  margin-top: 14px;
+  white-space: pre;
+}
+
+.article-conclusion {
+  background: rgba(188,140,255,0.06);
+  border: 1px solid rgba(188,140,255,0.2);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-size: 14px;
+  color: #C9D1D9;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.article-hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.article-hashtag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+
+/* ── Template Selector ── */
+.template-selector { }
+
+.template-card {
+  background: var(--s2);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.template-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(88,166,255,.15);
+}
+
+.template-card.selected {
+  border-color: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+
+.template-card-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.template-card-name {
+  padding: 14px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  background: var(--s1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.template-card.selected .template-card-name {
+  background: rgba(63,185,80,.1);
+  color: var(--green);
+}
+
 /* ── Utilities ── */
 .hidden { display: none !important; }
 </style>
@@ -520,6 +733,16 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
 </header>
 
 <main>
+
+  <!-- ── SELETOR POST vs ARTIGO ── -->
+  <div class="content-type-switcher">
+    <button class="content-type-btn post active" id="btn-type-post" onclick="setContentType('post')">
+      &#128248; Post Carrossel
+    </button>
+    <button class="content-type-btn article" id="btn-type-article" onclick="setContentType('article')">
+      &#128196; Artigo LinkedIn
+    </button>
+  </div>
 
   <!-- ── CARD ÚNICO DE SELEÇÃO DE TÓPICO ── -->
   <div class="topic-card" id="topic-selector-card">
@@ -570,6 +793,12 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
       <button class="btn-clear-topic" onclick="clearSelection()">Trocar</button>
     </div>
 
+    <!-- Template selection -->
+    <div id="template-selector" class="template-selector hidden" style="margin-top:24px;">
+      <div class="topic-label">&#127245; Escolha o estilo do template</div>
+      <div class="templates-grid" id="templates-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px;"></div>
+    </div>
+
   </div>
 
   <!-- Generate -->
@@ -579,6 +808,61 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
     </button>
     <div id="generate-hint" style="font-size:13px;color:var(--muted);margin-top:10px;">
       Selecione um topico acima para continuar
+    </div>
+  </div>
+
+  <!-- Article Preview -->
+  <div id="article-preview-section" class="hidden">
+    <div class="preview-header">
+      <div class="preview-title">Preview do Artigo</div>
+      <span class="preview-topic" id="article-preview-topic-label"></span>
+    </div>
+
+    <!-- PT-BR -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127463;&#127479;</span> Portugues (PT-BR)</div>
+      <div class="article-preview-card">
+        <img class="article-cover-img" id="article-cover-pt" src="" alt="Capa PT">
+        <div class="article-body">
+          <div class="article-headline" id="article-headline-pt"></div>
+          <div class="article-subheadline" id="article-subheadline-pt"></div>
+          <div class="article-meta">
+            <span class="reading-time" id="article-reading-pt"></span>
+          </div>
+          <div class="article-sections" id="article-sections-pt"></div>
+          <div class="article-conclusion" id="article-conclusion-pt"></div>
+          <div class="article-hashtags" id="article-hashtags-pt"></div>
+        </div>
+      </div>
+      <div class="post-text-label" style="margin-top:16px;">Texto do Post (acompanha o artigo)</div>
+      <textarea class="post-text" id="article-text-pt" rows="5"></textarea>
+    </div>
+
+    <!-- EN -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127482;&#127480;</span> English (EN)</div>
+      <div class="article-preview-card">
+        <img class="article-cover-img" id="article-cover-en" src="" alt="Cover EN">
+        <div class="article-body">
+          <div class="article-headline" id="article-headline-en"></div>
+          <div class="article-subheadline" id="article-subheadline-en"></div>
+          <div class="article-meta">
+            <span class="reading-time" id="article-reading-en"></span>
+          </div>
+          <div class="article-sections" id="article-sections-en"></div>
+          <div class="article-conclusion" id="article-conclusion-en"></div>
+          <div class="article-hashtags" id="article-hashtags-en"></div>
+        </div>
+      </div>
+      <div class="post-text-label" style="margin-top:16px;">Post Text (accompanies the article)</div>
+      <textarea class="post-text" id="article-text-en" rows="5"></textarea>
+    </div>
+
+    <!-- Publish -->
+    <div class="publish-wrap">
+      <button class="btn-publish" id="btn-publish-article" onclick="publishArticle()">
+        Publicar Artigo no LinkedIn
+      </button>
     </div>
   </div>
 
@@ -647,9 +931,11 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
 
 <script>
 // ── State ────────────────────────────────────────────────────────────────────
-let queueTopics       = [];   // fila estática do JSON
+let queueTopics       = [];
 let queueIndex        = 0;
-let selectedTopic     = null; // { id, topic, _trending? } — o que VAI ser gerado
+let selectedTopic     = null;
+let selectedTemplate  = 'slide.html';
+let contentType       = 'post';   // 'post' | 'article'
 let currentJobId      = null;
 let pollTimer         = null;
 let researchPollTimer = null;
@@ -694,27 +980,97 @@ function selectQueueTopic() {
 // ── Seleção confirmada ────────────────────────────────────────────────────────
 function confirmSelection(t) {
   selectedTopic = t;
+  selectedTemplate = 'slide.html';
   document.getElementById('selected-topic-banner-name').textContent = t.topic;
   show('selected-topic-banner');
-  // Habilita o botão Gerar
+
+  const btn = document.getElementById('btn-generate');
+
+  if (contentType === 'article') {
+    // Artigo: sem template selector, habilita direto
+    hide('template-selector');
+    btn.disabled = false;
+    btn.textContent = '✍️ Gerar Artigo';
+    document.getElementById('generate-hint').style.display = 'none';
+    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    // Post: mostra template selector
+    showTemplateSelector();
+    btn.disabled = true;
+    btn.textContent = '⚡ Gerar Post';
+    document.getElementById('generate-hint').textContent = 'Selecione um estilo para continuar';
+    document.getElementById('generate-hint').style.display = '';
+  }
+}
+
+function clearSelection() {
+  selectedTopic = null;
+  selectedTemplate = 'slide.html';
+  hide('selected-topic-banner');
+  hide('template-selector');
+  document.querySelectorAll('.topic-option').forEach(c => c.classList.remove('selected'));
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  document.getElementById('generate-hint').textContent = 'Selecione um topico acima para continuar';
+  document.getElementById('generate-hint').style.display = '';
+}
+
+// ── Template Selection ────────────────────────────────────────────────────────
+const TEMPLATES = [
+  { id: 'original', file: 'slide.html', name: 'Original', icon: '✨' },
+  { id: 'minimal', file: 'slide_minimal.html', name: 'Minimalista', icon: '⬚' },
+  { id: 'card', file: 'slide_card.html', name: 'Card', icon: '📦' }
+];
+
+function showTemplateSelector() {
+  const grid = document.getElementById('templates-grid');
+  grid.innerHTML = '';
+
+  TEMPLATES.forEach(tpl => {
+    const card = document.createElement('div');
+    card.className = 'template-card';
+    if (selectedTemplate === tpl.file) card.classList.add('selected');
+
+    card.innerHTML = `
+      <div class="template-card-preview">
+        <img src="/template-preview/${tpl.id}" alt="${tpl.name}" loading="lazy">
+      </div>
+      <div class="template-card-name">
+        <span>${tpl.icon}</span>
+        <span>${tpl.name}</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => selectTemplate(tpl.file));
+    grid.appendChild(card);
+  });
+
+  show('template-selector');
+}
+
+function selectTemplate(templateFile) {
+  selectedTemplate = templateFile;
+
+  // Update UI
+  document.querySelectorAll('.template-card').forEach((card, idx) => {
+    if (TEMPLATES[idx].file === templateFile) {
+      card.classList.add('selected');
+    } else {
+      card.classList.remove('selected');
+    }
+  });
+
+  // Enable generate button
   const btn = document.getElementById('btn-generate');
   btn.disabled = false;
   document.getElementById('generate-hint').style.display = 'none';
   btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function clearSelection() {
-  selectedTopic = null;
-  hide('selected-topic-banner');
-  document.querySelectorAll('.topic-option').forEach(c => c.classList.remove('selected'));
-  const btn = document.getElementById('btn-generate');
-  btn.disabled = true;
-  document.getElementById('generate-hint').style.display = '';
-}
-
 // ── Generate ─────────────────────────────────────────────────────────────────
 async function startGenerate() {
   if (!selectedTopic) return;
+  if (contentType === 'article') { startGenerateArticle(); return; }
 
   const topic = selectedTopic;
   setBusy(true);
@@ -723,7 +1079,10 @@ async function startGenerate() {
   hide('preview-section');
 
   try {
-    const payload = { topic_id: topic.id };
+    const payload = {
+      topic_id: topic.id,
+      template: selectedTemplate
+    };
     if (topic._trending) payload.topic_name = topic.topic;
     hide('topic-selector-card');
     const r = await fetch('/api/generate', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
@@ -985,6 +1344,191 @@ function escHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// ── Content Type ─────────────────────────────────────────────────────────────
+function setContentType(type) {
+  contentType = type;
+
+  document.getElementById('btn-type-post').classList.toggle('active', type === 'post');
+  document.getElementById('btn-type-article').classList.toggle('active', type === 'article');
+
+  // Mostra/esconde seletor de template (apenas para posts)
+  const templateSel = document.getElementById('template-selector');
+  if (selectedTopic) {
+    if (type === 'post') {
+      show('template-selector');
+    } else {
+      hide('template-selector');
+      // Artigo: habilita gerar direto após selecionar tópico
+      const btn = document.getElementById('btn-generate');
+      btn.disabled = false;
+      document.getElementById('generate-hint').style.display = 'none';
+    }
+  }
+
+  // Atualiza label do botão
+  const btn = document.getElementById('btn-generate');
+  btn.textContent = type === 'post' ? '⚡ Gerar Post' : '✍️ Gerar Artigo';
+}
+
+// ── Article Generate ──────────────────────────────────────────────────────────
+async function startGenerateArticle() {
+  if (!selectedTopic) return;
+
+  const topic = selectedTopic;
+  hide('topic-selector-card');
+  hide('article-preview-section');
+  setBusyArticle(true);
+  resetSteps();
+  show('progress-section');
+
+  try {
+    const payload = { topic_id: topic.id };
+    if (topic._trending) payload.topic_name = topic.topic;
+
+    const r = await fetch('/api/generate-article', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro desconhecido');
+    currentJobId = data.job_id;
+    pollTimer = setInterval(() => pollArticleStatus(currentJobId), 1500);
+  } catch (e) {
+    showToast(e.message, 'error');
+    setBusyArticle(false);
+    hide('progress-section');
+    show('topic-selector-card');
+  }
+}
+
+async function pollArticleStatus(jobId) {
+  try {
+    const r    = await fetch(`/api/status-article/${jobId}`);
+    const data = await r.json();
+
+    updateSteps(data.step || 0);
+
+    if (data.status === 'ready') {
+      clearInterval(pollTimer);
+      setBusyArticle(false);
+      showArticlePreview(data);
+    } else if (data.status === 'error') {
+      clearInterval(pollTimer);
+      setBusyArticle(false);
+      hide('progress-section');
+      show('topic-selector-card');
+      showToast('Erro: ' + data.error, 'error');
+    }
+  } catch { /* keep polling */ }
+}
+
+function showArticlePreview(data) {
+  hide('progress-section');
+
+  document.getElementById('article-preview-topic-label').textContent = data.topic;
+
+  // PT-BR
+  document.getElementById('article-cover-pt').src       = data.cover_pt + '?t=' + Date.now();
+  document.getElementById('article-headline-pt').textContent    = data.headline_pt;
+  document.getElementById('article-subheadline-pt').textContent = data.subheadline_pt;
+  document.getElementById('article-reading-pt').textContent     = `⏱ ${data.reading_time_pt} min de leitura`;
+  renderArticleSections('article-sections-pt', data.sections_pt);
+  document.getElementById('article-conclusion-pt').textContent  = data.conclusion_pt;
+  renderHashtags('article-hashtags-pt', data.hashtags_pt);
+  document.getElementById('article-text-pt').value = data.post_text_pt;
+
+  // EN
+  document.getElementById('article-cover-en').src       = data.cover_en + '?t=' + Date.now();
+  document.getElementById('article-headline-en').textContent    = data.headline_en;
+  document.getElementById('article-subheadline-en').textContent = data.subheadline_en;
+  document.getElementById('article-reading-en').textContent     = `⏱ ${data.reading_time_en} min read`;
+  renderArticleSections('article-sections-en', data.sections_en);
+  document.getElementById('article-conclusion-en').textContent  = data.conclusion_en;
+  renderHashtags('article-hashtags-en', data.hashtags_en);
+  document.getElementById('article-text-en').value = data.post_text_en;
+
+  show('article-preview-section');
+  document.getElementById('article-preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderArticleSections(containerId, sections) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  (sections || []).forEach(sec => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <div class="article-section-heading">${escHtml(sec.heading)}</div>
+      <div class="article-section-body">${escHtml(sec.body)}</div>
+      ${sec.code_block ? `<pre class="article-code-block">${escHtml(sec.code_block)}</pre>` : ''}
+    `;
+    el.appendChild(div);
+  });
+}
+
+function renderHashtags(containerId, hashtags) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = (hashtags || []).map(h =>
+    `<span class="article-hashtag">#${escHtml(h)}</span>`
+  ).join('');
+}
+
+async function publishArticle() {
+  if (!currentJobId) return;
+
+  const btn = document.getElementById('btn-publish-article');
+  btn.disabled = true;
+  btn.textContent = 'Publicando...';
+
+  try {
+    const r = await fetch('/api/publish-article', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        job_id:       currentJobId,
+        post_text_pt: document.getElementById('article-text-pt').value,
+        post_text_en: document.getElementById('article-text-en').value,
+      })
+    });
+    const data = await r.json();
+
+    if (!r.ok) throw new Error(data.error || 'Erro ao publicar');
+
+    btn.textContent = 'Publicado!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#0D1117';
+    showToast('Artigos publicados no LinkedIn!', 'success');
+
+    setTimeout(() => {
+      if (selectedTopic && !selectedTopic._trending) {
+        const idx = queueTopics.findIndex(x => x.id === selectedTopic.id);
+        if (idx >= 0) queueTopics.splice(idx, 1);
+        if (queueIndex >= queueTopics.length) queueIndex = Math.max(0, queueTopics.length - 1);
+        updateQueueUI();
+      }
+      clearSelection();
+      hide('article-preview-section');
+      currentJobId = null;
+      btn.disabled = false;
+      btn.textContent = 'Publicar Artigo no LinkedIn';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+
+  } catch (e) {
+    showToast(e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Publicar Artigo no LinkedIn';
+  }
+}
+
+function setBusyArticle(busy) {
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = busy;
+  btn.textContent = busy ? 'Gerando Artigo...' : '✍️ Gerar Artigo';
+  if (!busy) show('topic-selector-card');
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
