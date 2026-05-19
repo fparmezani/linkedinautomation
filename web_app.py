@@ -5,11 +5,14 @@ Acesse: http://localhost:5000
 """
 
 import os
+import re
 import uuid
+import json
 import threading
 from datetime import date
+from functools import wraps
 from pathlib import Path
-from flask import Flask, render_template, jsonify, request, send_from_directory, abort
+from flask import Flask, render_template, jsonify, request, send_from_directory, abort, session, redirect, url_for
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent / ".env", override=True)
@@ -22,12 +25,25 @@ from article_generator.generator  import generate_article
 from article_generator.cover_renderer import render_article_cover
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "dotnet-bot-secret-2025")
 
 BASE_DIR   = Path(__file__).parent
 OUTPUT_DIR = BASE_DIR / "output"
 
 AUTHOR_NAME   = os.getenv("LINKEDIN_DISPLAY_NAME", "Fernando Parmezani")
 AUTHOR_HANDLE = os.getenv("LINKEDIN_HANDLE", "@fparmezani")
+
+APP_USERNAME = os.getenv("APP_USERNAME", "admin")
+APP_PASSWORD = os.getenv("APP_PASSWORD", "dotnetbot")
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login_page"))
+        return f(*args, **kwargs)
+    return decorated
 
 # jobs[job_id] = { status, step_label, topic, data_pt/en, png_paths_pt/en, ... }
 _jobs: dict = {}
@@ -72,6 +88,62 @@ def _run_generation(job_id: str, topic: dict, template: str = "slide.html"):
         job["error"]      = str(exc)
 
 
+def _make_slug(text: str) -> str:
+    slug = text.lower().strip()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[\s_]+", "-", slug)
+    return slug[:80]
+
+
+def _save_article_html(article_data: dict, lang: str, output_dir: str,
+                       slug: str, today: str,
+                       author_name: str, author_handle: str) -> str:
+    """Render and save the article page HTML. Returns the saved path."""
+    initials = "".join(p[0].upper() for p in author_name.split()[:2])
+
+    # Prepare paragraphs per section
+    sections = []
+    for sec in article_data.get("sections", []):
+        paras = [p.strip() for p in sec.get("body", "").split("\n\n") if p.strip()]
+        sections.append({
+            "heading":       sec.get("heading", ""),
+            "body_paragraphs": paras,
+            "code_block":    sec.get("code_block"),
+            "code_language": sec.get("code_language", "csharp"),
+        })
+
+    conclusion_paragraphs = [
+        p.strip() for p in article_data.get("conclusion", "").split("\n\n") if p.strip()
+    ]
+
+    base_url = os.getenv("APP_BASE_URL", "").rstrip("/")
+
+    html = render_template(
+        "article_page.html",
+        lang=lang,
+        headline=article_data.get("headline", ""),
+        subheadline=article_data.get("subheadline", ""),
+        cover_tag=article_data.get("cover_tag", "AI + .NET"),
+        reading_time_min=article_data.get("reading_time_min", 6),
+        sections=sections,
+        conclusion_paragraphs=conclusion_paragraphs,
+        cta=article_data.get("cta", ""),
+        hashtags=article_data.get("hashtags", []),
+        author_name=author_name,
+        author_handle=author_handle,
+        author_initials=initials,
+        slug=slug,
+        date=today,
+        base_url=base_url,
+    )
+
+    page_dir  = Path(output_dir)
+    page_dir.mkdir(parents=True, exist_ok=True)
+    page_path = page_dir / "index.html"
+    page_path.write_text(html, encoding="utf-8")
+    return str(page_path)
+
+
 def _run_article_generation(job_id: str, topic: dict):
     job = _jobs[job_id]
     today = date.today().isoformat()
@@ -98,6 +170,16 @@ def _run_article_generation(job_id: str, topic: dict):
         cover_en = render_article_cover(data_en, str(out / "en"), AUTHOR_NAME, AUTHOR_HANDLE)
         job["cover_en"] = cover_en
 
+        # Gera slugs e salva páginas HTML
+        slug_pt = _make_slug(data_pt.get("headline", topic["topic"])) + "-pt"
+        slug_en = _make_slug(data_en.get("headline", topic["topic"]))
+
+        with app.app_context():
+            _save_article_html(data_pt, "pt", str(out / "pt"), slug_pt, today, AUTHOR_NAME, AUTHOR_HANDLE)
+            _save_article_html(data_en, "en", str(out / "en"), slug_en, today, AUTHOR_NAME, AUTHOR_HANDLE)
+
+        job["slug_pt"]    = slug_pt
+        job["slug_en"]    = slug_en
         job["date"]       = today
         job["step"]       = 5
         job["step_label"] = "Pronto!"
@@ -111,7 +193,29 @@ def _run_article_generation(job_id: str, topic: dict):
 
 # ── Routes ───────────────────────────────────────────────────────────────────
 
+@app.route("/login", methods=["GET", "POST"])
+def login_page():
+    if session.get("logged_in"):
+        return redirect(url_for("index"))
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        if username == APP_USERNAME and password == APP_PASSWORD:
+            session["logged_in"] = True
+            return redirect(url_for("index"))
+        error = "Usuário ou senha incorretos."
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login_page"))
+
+
 @app.route("/")
+@login_required
 def index():
     from flask import make_response
     resp = make_response(render_template("index.html",
@@ -124,13 +228,17 @@ def index():
 
 
 @app.route("/api/research", methods=["POST"])
+@login_required
 def api_research():
     """Pesquisa topicos em alta e sugere o melhor para hoje."""
     def _run(job):
         try:
             data = load_topics()
-            used = [t["topic"] for t in data.get("used", [])]
-            result = research_trending_topic(used_topics=used)
+            # Exclui tanto os já publicados quanto os que já estão na fila
+            used      = [t["topic"] for t in data.get("used", [])]
+            queued    = [t["topic"] for t in data.get("available", [])]
+            all_known = used + queued
+            result = research_trending_topic(used_topics=all_known)
             job.update({"status": "done", **result})
         except Exception as exc:
             job.update({"status": "error", "error": str(exc)})
@@ -142,6 +250,7 @@ def api_research():
 
 
 @app.route("/api/research/status/<job_id>")
+@login_required
 def api_research_status(job_id):
     job = _jobs.get(f"research_{job_id}")
     if not job:
@@ -150,6 +259,7 @@ def api_research_status(job_id):
 
 
 @app.route("/api/topics")
+@login_required
 def api_topics():
     data = load_topics()
     return jsonify({
@@ -160,6 +270,7 @@ def api_topics():
 
 
 @app.route("/api/generate", methods=["POST"])
+@login_required
 def api_generate():
     body     = request.get_json() or {}
     topic_id = body.get("topic_id")
@@ -198,6 +309,7 @@ def api_generate():
 
 
 @app.route("/api/status/<job_id>")
+@login_required
 def api_status(job_id):
     job = _jobs.get(job_id)
     if not job:
@@ -222,6 +334,7 @@ def api_status(job_id):
 
 
 @app.route("/api/publish", methods=["POST"])
+@login_required
 def api_publish():
     body         = request.get_json() or {}
     job_id       = body.get("job_id")
@@ -249,6 +362,7 @@ def api_publish():
 
 
 @app.route("/api/generate-article", methods=["POST"])
+@login_required
 def api_generate_article():
     body     = request.get_json() or {}
     topic_id = body.get("topic_id")
@@ -285,6 +399,7 @@ def api_generate_article():
 
 
 @app.route("/api/status-article/<job_id>")
+@login_required
 def api_status_article(job_id):
     job = _jobs.get(job_id)
     if not job:
@@ -302,8 +417,11 @@ def api_status_article(job_id):
         today = job["date"]
         data_pt = job["data_pt"]
         data_en = job["data_en"]
+        base_url = os.getenv("APP_BASE_URL", "").rstrip("/")
         result["cover_pt"]       = f"/output/{today}/articles/pt/article_cover.png"
         result["cover_en"]       = f"/output/{today}/articles/en/article_cover.png"
+        result["article_url_pt"] = f"{base_url}/articles/{job['slug_pt']}"
+        result["article_url_en"] = f"{base_url}/articles/{job['slug_en']}"
         result["headline_pt"]    = data_pt.get("headline", "")
         result["headline_en"]    = data_en.get("headline", "")
         result["subheadline_pt"] = data_pt.get("subheadline", "")
@@ -323,6 +441,7 @@ def api_status_article(job_id):
 
 
 @app.route("/api/publish-article", methods=["POST"])
+@login_required
 def api_publish_article():
     body         = request.get_json() or {}
     job_id       = body.get("job_id")
@@ -334,11 +453,18 @@ def api_publish_article():
         return jsonify({"error": "Job não está pronto para publicação"}), 400
 
     try:
-        headline_pt = job["data_pt"]["headline"]
-        headline_en = job["data_en"]["headline"]
+        headline_pt  = job["data_pt"]["headline"]
+        headline_en  = job["data_en"]["headline"]
+        base_url     = os.getenv("APP_BASE_URL", "").rstrip("/")
+        url_pt       = f"{base_url}/articles/{job['slug_pt']}"
+        url_en       = f"{base_url}/articles/{job['slug_en']}"
 
-        id_pt = publish_article(job["cover_pt"], post_text_pt, headline_pt)
-        id_en = publish_article(job["cover_en"], post_text_en, headline_en)
+        # Inclui o link do artigo no texto do post
+        full_text_pt = f"{post_text_pt}\n\n🔗 Leia o artigo completo: {url_pt}"
+        full_text_en = f"{post_text_en}\n\n🔗 Read the full article: {url_en}"
+
+        id_pt = publish_article(job["cover_pt"], full_text_pt, headline_pt)
+        id_en = publish_article(job["cover_en"], full_text_en, headline_en)
 
         mark_topic_used(job["topic_id"])
         job["status"] = "published"
@@ -347,6 +473,21 @@ def api_publish_article():
 
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/articles/<slug>")
+def serve_article(slug):
+    """Serve a generated article page by slug."""
+    # Search in all dated output directories
+    for date_dir in sorted(OUTPUT_DIR.iterdir(), reverse=True):
+        for lang in ("pt", "en"):
+            page = date_dir / "articles" / lang / "index.html"
+            if page.exists():
+                # Match slug stored in job or derive from filename
+                content = page.read_text(encoding="utf-8")
+                if f"/articles/{slug}" in content:
+                    return content, 200, {"Content-Type": "text/html; charset=utf-8"}
+    abort(404)
 
 
 @app.route("/output/<path:filename>")

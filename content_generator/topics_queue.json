@@ -17,6 +17,16 @@
       "id": 16,
       "topic": "AI-assisted unit test generation in Visual Studio",
       "niche": "Productivity"
+    },
+    {
+      "id": 17,
+      "topic": "Azure OpenAI Service + .NET: from zero to endpoint",
+      "niche": "Cloud AI"
+    },
+    {
+      "id": 18,
+      "topic": "Refactoring legacy C# code with AI assistance",
+      "niche": "Productivity"
     }
   ],
   "available": [
@@ -44,16 +54,6 @@
       "id": 15,
       "topic": "Building a RAG system in C# with Semantic Kernel",
       "niche": "AI Architecture"
-    },
-    {
-      "id": 17,
-      "topic": "Azure OpenAI Service + .NET: from zero to endpoint",
-      "niche": "Cloud AI"
-    },
-    {
-      "id": 18,
-      "topic": "Refactoring legacy C# code with AI assistance",
-      "niche": "Productivity"
     },
     {
       "id": 19,

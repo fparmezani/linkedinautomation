@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ headline }} — {{ author_name }}</title>
+
+<!-- Open Graph (LinkedIn, Twitter, WhatsApp preview) -->
+<meta property="og:title"       content="{{ headline }}">
+<meta property="og:description" content="{{ subheadline }}">
+<meta property="og:image"       content="{{ base_url }}/output/{{ date }}/articles/{{ lang }}/article_cover.png">
+<meta property="og:url"         content="{{ base_url }}/articles/{{ slug }}">
+<meta property="og:type"        content="article">
+<meta property="og:site_name"   content="{{ author_name }}">
+
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="{{ headline }}">
+<meta name="twitter:description" content="{{ subheadline }}">
+<meta name="twitter:image"       content="{{ base_url }}/output/{{ date }}/articles/{{ lang }}/article_cover.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:     #0D1117;
+  --s1:     #161B22;
+  --s2:     #21262D;
+  --border: #30363D;
+  --text:   #E6EDF3;
+  --muted:  #8B949E;
+  --blue:   #58A6FF;
+  --green:  #3FB950;
+  --purple: #BC8CFF;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.7;
+}
+
+/* ── Header ── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  background: var(--s1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #58A6FF, #BC8CFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+}
+
+.back-link {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s;
+}
+.back-link:hover { color: var(--blue); }
+
+/* ── Cover ── */
+.cover-img {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Article layout ── */
+article {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── Meta ── */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(88,166,255,.1);
+  border: 1px solid rgba(88,166,255,.3);
+  border-radius: 20px;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  padding: 4px 12px;
+  text-transform: uppercase;
+}
+
+.reading-time { color: var(--green); }
+
+/* ── Headline ── */
+h1 {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.subheadline {
+  font-size: 18px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Body ── */
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 40px 0 16px;
+  color: var(--text);
+  padding-left: 14px;
+  border-left: 3px solid var(--purple);
+}
+
+p {
+  margin-bottom: 18px;
+  color: #C9D1D9;
+  font-size: 16px;
+}
+
+pre {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  margin: 20px 0 28px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+code { font-family: 'JetBrains Mono', monospace; }
+p code {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 13px;
+  padding: 2px 6px;
+  color: var(--blue);
+}
+
+/* ── Conclusion ── */
+.conclusion-block {
+  background: rgba(188,140,255,.06);
+  border: 1px solid rgba(188,140,255,.2);
+  border-radius: 12px;
+  margin-top: 40px;
+  padding: 28px 32px;
+}
+.conclusion-block h2 { border-left-color: var(--purple); }
+
+/* ── Hashtags ── */
+.hashtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+.hashtag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  background: rgba(88,166,255,.08);
+  border: 1px solid rgba(88,166,255,.2);
+  border-radius: 4px;
+  padding: 4px 10px;
+}
+
+/* ── Author footer ── */
+.author-footer {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.author-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #58A6FF, #BC8CFF);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 800; color: #0D1117;
+  flex-shrink: 0;
+}
+
+.author-name { font-size: 16px; font-weight: 700; }
+.author-handle { font-size: 13px; color: var(--blue); font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">&lt;/&gt; dotnet-bot</a>
+    <a class="back-link" href="/">← Voltar</a>
+  </div>
+</header>
+
+<img class="cover-img"
+     src="/output/{{ date }}/articles/{{ lang }}/article_cover.png"
+     alt="{{ headline }}">
+
+<article>
+  <div class="meta">
+    <span class="tag">{{ cover_tag }}</span>
+    <span class="reading-time">⏱ {{ reading_time_min }} min de leitura</span>
+    <span>por {{ author_name }}</span>
+  </div>
+
+  <h1>{{ headline }}</h1>
+  <p class="subheadline">{{ subheadline }}</p>
+
+  {% for section in sections %}
+  <h2>{{ section.heading }}</h2>
+  {% for para in section.body_paragraphs %}
+  <p>{{ para }}</p>
+  {% endfor %}
+  {% if section.code_block %}
+  <pre><code class="{{ section.code_language or 'plaintext' }}">{{ section.code_block }}</code></pre>
+  {% endif %}
+  {% endfor %}
+
+  <div class="conclusion-block">
+    <h2>Conclusão</h2>
+    {% for para in conclusion_paragraphs %}
+    <p>{{ para }}</p>
+    {% endfor %}
+  </div>
+
+  {% if cta %}
+  <p style="margin-top:28px;font-weight:600;color:var(--text);">{{ cta }}</p>
+  {% endif %}
+
+  <div class="hashtags">
+    {% for h in hashtags %}
+    <span class="hashtag">#{{ h }}</span>
+    {% endfor %}
+  </div>
+</article>
+
+<div class="author-footer">
+  <div class="author-avatar">{{ author_initials }}</div>
+  <div>
+    <div class="author-name">{{ author_name }}</div>
+    <div class="author-handle">{{ author_handle }}</div>
+  </div>
+</div>
+
+<script>hljs.highlightAll();</script>
+</body>
+</html>

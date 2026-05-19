@@ -729,7 +729,10 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
 
 <header>
   <div class="logo">&lt;/&gt; dotnet-bot</div>
-  <div class="header-meta">by <span class="handle">{{ author_handle }}</span></div>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="header-meta">by <span class="handle">{{ author_handle }}</span></div>
+    <a href="/logout" style="font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;transition:color .15s,border-color .15s;" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">Sair</a>
+  </div>
 </header>
 
 <main>
@@ -834,7 +837,8 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
           <div class="article-hashtags" id="article-hashtags-pt"></div>
         </div>
       </div>
-      <div class="post-text-label" style="margin-top:16px;">Texto do Post (acompanha o artigo)</div>
+      <div id="article-url-banner-pt" style="display:none;margin-top:16px;"></div>
+      <div class="post-text-label" style="margin-top:8px;">Texto do Post (acompanha o artigo)</div>
       <textarea class="post-text" id="article-text-pt" rows="5"></textarea>
     </div>
 
@@ -854,7 +858,8 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
           <div class="article-hashtags" id="article-hashtags-en"></div>
         </div>
       </div>
-      <div class="post-text-label" style="margin-top:16px;">Post Text (accompanies the article)</div>
+      <div id="article-url-banner-en" style="display:none;margin-top:16px;"></div>
+      <div class="post-text-label" style="margin-top:8px;">Post Text (accompanies the article)</div>
       <textarea class="post-text" id="article-text-en" rows="5"></textarea>
     </div>
 
@@ -1431,27 +1436,40 @@ function showArticlePreview(data) {
   document.getElementById('article-preview-topic-label').textContent = data.topic;
 
   // PT-BR
-  document.getElementById('article-cover-pt').src       = data.cover_pt + '?t=' + Date.now();
-  document.getElementById('article-headline-pt').textContent    = data.headline_pt;
-  document.getElementById('article-subheadline-pt').textContent = data.subheadline_pt;
-  document.getElementById('article-reading-pt').textContent     = `⏱ ${data.reading_time_pt} min de leitura`;
+  document.getElementById('article-cover-pt').src              = data.cover_pt + '?t=' + Date.now();
+  document.getElementById('article-headline-pt').textContent   = data.headline_pt;
+  document.getElementById('article-subheadline-pt').textContent= data.subheadline_pt;
+  document.getElementById('article-reading-pt').textContent    = `⏱ ${data.reading_time_pt} min de leitura`;
   renderArticleSections('article-sections-pt', data.sections_pt);
-  document.getElementById('article-conclusion-pt').textContent  = data.conclusion_pt;
+  document.getElementById('article-conclusion-pt').textContent = data.conclusion_pt;
   renderHashtags('article-hashtags-pt', data.hashtags_pt);
   document.getElementById('article-text-pt').value = data.post_text_pt;
+  if (data.article_url_pt) renderArticleUrlBanner('article-url-banner-pt', data.article_url_pt);
 
   // EN
-  document.getElementById('article-cover-en').src       = data.cover_en + '?t=' + Date.now();
-  document.getElementById('article-headline-en').textContent    = data.headline_en;
-  document.getElementById('article-subheadline-en').textContent = data.subheadline_en;
-  document.getElementById('article-reading-en').textContent     = `⏱ ${data.reading_time_en} min read`;
+  document.getElementById('article-cover-en').src              = data.cover_en + '?t=' + Date.now();
+  document.getElementById('article-headline-en').textContent   = data.headline_en;
+  document.getElementById('article-subheadline-en').textContent= data.subheadline_en;
+  document.getElementById('article-reading-en').textContent    = `⏱ ${data.reading_time_en} min read`;
   renderArticleSections('article-sections-en', data.sections_en);
-  document.getElementById('article-conclusion-en').textContent  = data.conclusion_en;
+  document.getElementById('article-conclusion-en').textContent = data.conclusion_en;
   renderHashtags('article-hashtags-en', data.hashtags_en);
   document.getElementById('article-text-en').value = data.post_text_en;
+  if (data.article_url_en) renderArticleUrlBanner('article-url-banner-en', data.article_url_en);
 
   show('article-preview-section');
   document.getElementById('article-preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderArticleUrlBanner(id, url) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = `<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.3);border-radius:8px;padding:12px 16px;color:var(--green);text-decoration:none;font-size:13px;font-weight:600;margin-bottom:12px;">
+    <span>&#128279;</span>
+    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${url}</span>
+    <span style="color:var(--muted);font-weight:400;">Abrir artigo ↗</span>
+  </a>`;
+  el.style.display = 'block';
 }
 
 function renderArticleSections(containerId, sections) {
