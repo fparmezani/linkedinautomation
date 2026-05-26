@@ -26,12 +26,19 @@ async def _render_cover_async(html: str, output_path: str):
         await browser.close()
 
 
-def render_article_cover(article_data: dict, output_dir: str,
-                         author_name: str, author_handle: str) -> str:
+COVER_TEMPLATES = [
+    "article_cover.html",
+    "article_cover_v2.html",
+    "article_cover_v3.html",
+]
+
+
+def render_article_covers(article_data: dict, output_dir: str,
+                           author_name: str, author_handle: str) -> list:
+    """Renderiza 3 variações de capa. Retorna lista de paths."""
     Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-    template = _jinja.get_template("article_cover.html")
-    html = template.render(
+    context = dict(
         headline=article_data.get("headline", article_data.get("topic", "")),
         subheadline=article_data.get("subheadline", ""),
         cover_tag=article_data.get("cover_tag", "AI + .NET"),
@@ -41,6 +48,17 @@ def render_article_cover(article_data: dict, output_dir: str,
         author_initials=_get_initials(author_name),
     )
 
-    output_path = os.path.join(output_dir, "article_cover.png")
-    asyncio.run(_render_cover_async(html, output_path))
-    return output_path
+    paths = []
+    for i, tpl_name in enumerate(COVER_TEMPLATES, start=1):
+        html = _jinja.get_template(tpl_name).render(**context)
+        out  = os.path.join(output_dir, f"cover_v{i}.png")
+        asyncio.run(_render_cover_async(html, out))
+        paths.append(out)
+
+    return paths
+
+
+# Keep old function for backwards compatibility
+def render_article_cover(article_data: dict, output_dir: str,
+                         author_name: str, author_handle: str) -> str:
+    return render_article_covers(article_data, output_dir, author_name, author_handle)[0]

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1200px; height: 627px;
+  background: #0D1117;
+  font-family: 'Inter', sans-serif;
+  color: #E6EDF3;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Split layout — left dark, right gradient */
+.split-right {
+  position: absolute;
+  right: 0; top: 0;
+  width: 420px; height: 100%;
+  background: linear-gradient(160deg, #1a2332 0%, #0f1923 60%, #0D1117 100%);
+  border-left: 1px solid #30363D;
+}
+
+/* Diagonal accent */
+.diagonal {
+  position: absolute;
+  top: 0; right: 420px;
+  width: 0; height: 0;
+  border-top: 627px solid transparent;
+  border-right: 80px solid #161B22;
+}
+
+/* Big number / index decoration */
+.bg-number {
+  position: absolute;
+  right: 30px; top: -20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 220px;
+  font-weight: 900;
+  color: rgba(88,166,255,0.04);
+  line-height: 1;
+  user-select: none;
+}
+
+/* Top bar */
+.top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3FB950, #58A6FF, #BC8CFF);
+}
+
+/* Left content */
+.left-content {
+  position: absolute;
+  left: 0; top: 0;
+  width: 780px; height: 100%;
+  padding: 52px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #3FB950;
+  padding: 6px 14px;
+  border: 1px solid rgba(63,185,80,0.4);
+  border-radius: 4px;
+  background: rgba(63,185,80,0.06);
+  width: fit-content;
+}
+
+.headline {
+  font-size: 50px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #E6EDF3;
+  max-width: 680px;
+}
+
+.headline span {
+  background: linear-gradient(135deg, #58A6FF, #3FB950);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subheadline {
+  font-size: 16px;
+  color: #8B949E;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-top: 16px;
+}
+
+/* Right panel */
+.right-panel {
+  position: absolute;
+  right: 0; top: 0;
+  width: 420px; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 40px 36px;
+}
+
+.stat-block {
+  background: rgba(88,166,255,0.06);
+  border: 1px solid rgba(88,166,255,0.15);
+  border-radius: 12px;
+  padding: 20px 24px;
+  width: 100%;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #8B949E;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: #58A6FF;
+}
+
+/* Author bottom */
+.author {
+  position: absolute;
+  bottom: 32px; left: 60px;
+  display: flex; align-items: center; gap: 12px;
+}
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #58A6FF, #3FB950);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 800; color: #0D1117;
+}
+.author-name { font-size: 14px; font-weight: 700; color: #E6EDF3; }
+.author-handle { font-size: 12px; color: #3FB950; font-family: 'JetBrains Mono', monospace; }
+
+.reading-time {
+  position: absolute;
+  bottom: 40px; right: 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: #8B949E;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<div class="split-right"></div>
+<div class="diagonal"></div>
+<div class="bg-number">{{ reading_time_min }}</div>
+
+<div class="left-content">
+  <span class="tag">&#9670; {{ cover_tag }}</span>
+  <div>
+    <div class="headline">{{ headline }}</div>
+    <div class="subheadline">{{ subheadline }}</div>
+  </div>
+</div>
+
+<div class="right-panel">
+  <div class="stat-block">
+    <div class="stat-label">Plataforma</div>
+    <div class="stat-value">.NET 8+ / C#</div>
+  </div>
+  <div class="stat-block">
+    <div class="stat-label">Categoria</div>
+    <div class="stat-value">{{ cover_tag }}</div>
+  </div>
+  <div class="stat-block">
+    <div class="stat-label">Leitura</div>
+    <div class="stat-value">~{{ reading_time_min }} minutos</div>
+  </div>
+</div>
+
+<div class="author">
+  <div class="avatar">{{ author_initials }}</div>
+  <div>
+    <div class="author-name">{{ author_name }}</div>
+    <div class="author-handle">{{ author_handle }}</div>
+  </div>
+</div>
+
+</body>
+</html>

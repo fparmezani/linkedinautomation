@@ -446,6 +446,42 @@ textarea.post-text {
 }
 textarea.post-text:focus { outline: none; border-color: var(--blue); }
 
+/* Rich article text */
+.article-rich {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  padding: 24px;
+  max-height: 500px;
+  overflow-y: auto;
+  user-select: text;
+}
+.article-rich h1 {
+  font-size: 22px; font-weight: 800; color: #E6EDF3;
+  margin: 0 0 8px 0; line-height: 1.3;
+}
+.article-rich h2 {
+  font-size: 17px; font-weight: 700; color: #58A6FF;
+  margin: 24px 0 8px 0; border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.article-rich .sub { color: var(--muted); font-size: 15px; margin-bottom: 20px; }
+.article-rich p { margin: 0 0 12px 0; }
+.article-rich pre {
+  background: #161B22; border: 1px solid var(--border);
+  border-radius: 6px; padding: 14px 16px; overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+  line-height: 1.6; color: #79C0FF; margin: 8px 0 16px 0;
+}
+.article-rich .hashtags {
+  color: var(--blue); font-size: 13px; margin-top: 16px;
+}
+
 /* ── Publish button ── */
 .publish-wrap {
   text-align: center;
@@ -545,6 +581,21 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
 
 .content-type-btn.active.post  { color: var(--blue); }
 .content-type-btn.active.article { color: var(--purple); }
+.content-type-btn.active.infographic { color: var(--green); }
+
+.cover-option.infographic-selected {
+  border: 2px solid var(--green);
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(63,185,80,0.3);
+}
+.cover-option.infographic-selected::after {
+  content: '✓ Publicar este';
+  position: absolute; top: 8px; right: 8px;
+  background: var(--green); color: #0D1117;
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 12px;
+}
+.cover-option { position: relative; }
 
 /* ── Article Preview ── */
 .article-preview-card {
@@ -661,6 +712,63 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
   padding: 3px 8px;
 }
 
+/* ── Article Covers Grid ── */
+.covers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.cover-option {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--s2);
+  transition: border-color .2s, transform .15s;
+}
+
+.cover-option:hover { border-color: var(--blue); transform: translateY(-2px); }
+
+.cover-option img {
+  width: 100%;
+  aspect-ratio: 1200/627;
+  object-fit: cover;
+  display: block;
+  cursor: zoom-in;
+}
+
+.cover-option-footer {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+
+.cover-option-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.btn-download {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  text-decoration: none;
+  transition: border-color .15s, color .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn-download:hover { border-color: var(--green); color: var(--green); }
+
 /* ── Template Selector ── */
 .template-selector { }
 
@@ -745,6 +853,9 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
     <button class="content-type-btn article" id="btn-type-article" onclick="setContentType('article')">
       &#128196; Artigo LinkedIn
     </button>
+    <button class="content-type-btn infographic" id="btn-type-infographic" onclick="setContentType('infographic')">
+      &#128202; Infográfico
+    </button>
   </div>
 
   <!-- ── CARD ÚNICO DE SELEÇÃO DE TÓPICO ── -->
@@ -824,49 +935,62 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
     <!-- PT-BR -->
     <div class="lang-block">
       <div class="lang-title"><span class="flag">&#127463;&#127479;</span> Portugues (PT-BR)</div>
-      <div class="article-preview-card">
-        <img class="article-cover-img" id="article-cover-pt" src="" alt="Capa PT">
-        <div class="article-body">
-          <div class="article-headline" id="article-headline-pt"></div>
-          <div class="article-subheadline" id="article-subheadline-pt"></div>
-          <div class="article-meta">
-            <span class="reading-time" id="article-reading-pt"></span>
-          </div>
-          <div class="article-sections" id="article-sections-pt"></div>
-          <div class="article-conclusion" id="article-conclusion-pt"></div>
-          <div class="article-hashtags" id="article-hashtags-pt"></div>
-        </div>
-      </div>
-      <div id="article-url-banner-pt" style="display:none;margin-top:16px;"></div>
-      <div class="post-text-label" style="margin-top:8px;">Texto do Post (acompanha o artigo)</div>
-      <textarea class="post-text" id="article-text-pt" rows="5"></textarea>
+
+      <!-- Texto para copiar -->
+      <div class="post-text-label">&#128203; Texto do Artigo — copie e cole no LinkedIn</div>
+      <div class="article-rich" id="article-text-pt"></div>
+      <button onclick="copyRichText('article-text-pt', this)" style="margin-top:8px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;padding:8px 18px;transition:color .15s,border-color .15s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        &#128203; Copiar texto formatado
+      </button>
+
+      <!-- 3 opções de capa -->
+      <div class="post-text-label" style="margin-top:24px;">&#127245; Escolha a imagem de capa</div>
+      <div class="covers-grid" id="covers-pt"></div>
     </div>
 
     <!-- EN -->
     <div class="lang-block">
       <div class="lang-title"><span class="flag">&#127482;&#127480;</span> English (EN)</div>
-      <div class="article-preview-card">
-        <img class="article-cover-img" id="article-cover-en" src="" alt="Cover EN">
-        <div class="article-body">
-          <div class="article-headline" id="article-headline-en"></div>
-          <div class="article-subheadline" id="article-subheadline-en"></div>
-          <div class="article-meta">
-            <span class="reading-time" id="article-reading-en"></span>
-          </div>
-          <div class="article-sections" id="article-sections-en"></div>
-          <div class="article-conclusion" id="article-conclusion-en"></div>
-          <div class="article-hashtags" id="article-hashtags-en"></div>
-        </div>
-      </div>
-      <div id="article-url-banner-en" style="display:none;margin-top:16px;"></div>
-      <div class="post-text-label" style="margin-top:8px;">Post Text (accompanies the article)</div>
-      <textarea class="post-text" id="article-text-en" rows="5"></textarea>
+
+      <div class="post-text-label">&#128203; Article Text — copy and paste to LinkedIn</div>
+      <div class="article-rich" id="article-text-en"></div>
+      <button onclick="copyRichText('article-text-en', this)" style="margin-top:8px;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;padding:8px 18px;transition:color .15s,border-color .15s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        &#128203; Copy formatted text
+      </button>
+
+      <div class="post-text-label" style="margin-top:24px;">&#127245; Choose cover image</div>
+      <div class="covers-grid" id="covers-en"></div>
+    </div>
+  </div>
+
+  <!-- Infographic Preview -->
+  <div id="infographic-preview-section" class="hidden">
+    <div class="preview-header">
+      <div class="preview-title">Preview do Infográfico</div>
+      <span class="preview-topic" id="infographic-preview-topic-label"></span>
     </div>
 
-    <!-- Publish -->
+    <!-- PT-BR -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127463;&#127479;</span> Portugues (PT-BR)</div>
+      <div class="post-text-label">&#128203; Texto para o post</div>
+      <textarea class="post-text" id="infographic-text-pt" rows="5"></textarea>
+      <div class="post-text-label" style="margin-top:24px;">&#127248; 3 Formatos — download e use no LinkedIn</div>
+      <div class="covers-grid" id="infographic-imgs-pt"></div>
+    </div>
+
+    <!-- EN -->
+    <div class="lang-block">
+      <div class="lang-title"><span class="flag">&#127482;&#127480;</span> English (EN)</div>
+      <div class="post-text-label">&#128203; Post text</div>
+      <textarea class="post-text" id="infographic-text-en" rows="5"></textarea>
+      <div class="post-text-label" style="margin-top:24px;">&#127248; 3 Formats — download and use on LinkedIn</div>
+      <div class="covers-grid" id="infographic-imgs-en"></div>
+    </div>
+
     <div class="publish-wrap">
-      <button class="btn-publish" id="btn-publish-article" onclick="publishArticle()">
-        Publicar Artigo no LinkedIn
+      <button class="btn-publish" id="btn-publish-infographic" onclick="publishInfographic()">
+        Publicar no LinkedIn
       </button>
     </div>
   </div>
@@ -940,7 +1064,7 @@ let queueTopics       = [];
 let queueIndex        = 0;
 let selectedTopic     = null;
 let selectedTemplate  = 'slide.html';
-let contentType       = 'post';   // 'post' | 'article'
+let contentType       = 'post';   // 'post' | 'article' | 'infographic'
 let currentJobId      = null;
 let pollTimer         = null;
 let researchPollTimer = null;
@@ -991,20 +1115,21 @@ function confirmSelection(t) {
 
   const btn = document.getElementById('btn-generate');
 
-  if (contentType === 'article') {
-    // Artigo: sem template selector, habilita direto
-    hide('template-selector');
-    btn.disabled = false;
-    btn.textContent = '✍️ Gerar Artigo';
-    document.getElementById('generate-hint').style.display = 'none';
-    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  } else {
+  if (contentType === 'post') {
     // Post: mostra template selector
     showTemplateSelector();
     btn.disabled = true;
     btn.textContent = '⚡ Gerar Post';
     document.getElementById('generate-hint').textContent = 'Selecione um estilo para continuar';
     document.getElementById('generate-hint').style.display = '';
+  } else {
+    // Artigo ou Infografico: sem template selector, habilita direto
+    hide('template-selector');
+    btn.disabled = false;
+    const labels = { article: '✍️ Gerar Artigo', infographic: '📊 Gerar Infográfico' };
+    btn.textContent = labels[contentType] || '⚡ Gerar';
+    document.getElementById('generate-hint').style.display = 'none';
+    btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
@@ -1018,6 +1143,17 @@ function clearSelection() {
   btn.disabled = true;
   document.getElementById('generate-hint').textContent = 'Selecione um topico acima para continuar';
   document.getElementById('generate-hint').style.display = '';
+}
+
+function resetPage() {
+  clearSelection();
+  hide('preview-section');
+  hide('article-preview-section');
+  hide('infographic-preview-section');
+  hide('progress-section');
+  currentJobId = null;
+  show('topic-selector-card');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ── Template Selection ────────────────────────────────────────────────────────
@@ -1076,6 +1212,7 @@ function selectTemplate(templateFile) {
 async function startGenerate() {
   if (!selectedTopic) return;
   if (contentType === 'article') { startGenerateArticle(); return; }
+  if (contentType === 'infographic') { startGenerateInfographic(); return; }
 
   const topic = selectedTopic;
   setBusy(true);
@@ -1119,6 +1256,12 @@ async function pollStatus(jobId) {
       setBusy(false);
       hide('progress-section');
       showToast('Erro: ' + data.error, 'error');
+    } else if (data.status === 'not_found') {
+      clearInterval(pollTimer);
+      setBusy(false);
+      hide('progress-section');
+      show('topic-selector-card');
+      showToast('Servidor reiniciou durante a geração. Tente novamente.', 'error');
     }
   } catch { /* network hiccup, keep polling */ }
 }
@@ -1199,7 +1342,6 @@ async function publish() {
     btn.style.color = '#0D1117';
     showToast('Posts publicados no LinkedIn!', 'success');
 
-    // Remove topico usado da fila e reseta estado
     setTimeout(() => {
       if (selectedTopic && !selectedTopic._trending) {
         const idx = queueTopics.findIndex(x => x.id === selectedTopic.id);
@@ -1207,14 +1349,12 @@ async function publish() {
         if (queueIndex >= queueTopics.length) queueIndex = Math.max(0, queueTopics.length - 1);
         updateQueueUI();
       }
-      clearSelection();
-      hide('preview-section');
-      currentJobId = null;
       btn.disabled = false;
       btn.textContent = 'Publicar no LinkedIn';
       btn.style.background = '';
       btn.style.color = '';
-    }, 3000);
+      resetPage();
+    }, 2000);
 
   } catch (e) {
     showToast(e.message, 'error');
@@ -1357,24 +1497,22 @@ function setContentType(type) {
 
   document.getElementById('btn-type-post').classList.toggle('active', type === 'post');
   document.getElementById('btn-type-article').classList.toggle('active', type === 'article');
+  document.getElementById('btn-type-infographic').classList.toggle('active', type === 'infographic');
 
   // Mostra/esconde seletor de template (apenas para posts)
-  const templateSel = document.getElementById('template-selector');
   if (selectedTopic) {
     if (type === 'post') {
       show('template-selector');
     } else {
       hide('template-selector');
-      // Artigo: habilita gerar direto após selecionar tópico
       const btn = document.getElementById('btn-generate');
       btn.disabled = false;
       document.getElementById('generate-hint').style.display = 'none';
     }
   }
 
-  // Atualiza label do botão
-  const btn = document.getElementById('btn-generate');
-  btn.textContent = type === 'post' ? '⚡ Gerar Post' : '✍️ Gerar Artigo';
+  const labels = { post: '⚡ Gerar Post', article: '✍️ Gerar Artigo', infographic: '📊 Gerar Infográfico' };
+  document.getElementById('btn-generate').textContent = labels[type] || labels.post;
 }
 
 // ── Article Generate ──────────────────────────────────────────────────────────
@@ -1426,6 +1564,12 @@ async function pollArticleStatus(jobId) {
       hide('progress-section');
       show('topic-selector-card');
       showToast('Erro: ' + data.error, 'error');
+    } else if (data.status === 'not_found') {
+      clearInterval(pollTimer);
+      setBusyArticle(false);
+      hide('progress-section');
+      show('topic-selector-card');
+      showToast('Servidor reiniciou durante a geração. Tente novamente.', 'error');
     }
   } catch { /* keep polling */ }
 }
@@ -1436,29 +1580,101 @@ function showArticlePreview(data) {
   document.getElementById('article-preview-topic-label').textContent = data.topic;
 
   // PT-BR
-  document.getElementById('article-cover-pt').src              = data.cover_pt + '?t=' + Date.now();
-  document.getElementById('article-headline-pt').textContent   = data.headline_pt;
-  document.getElementById('article-subheadline-pt').textContent= data.subheadline_pt;
-  document.getElementById('article-reading-pt').textContent    = `⏱ ${data.reading_time_pt} min de leitura`;
-  renderArticleSections('article-sections-pt', data.sections_pt);
-  document.getElementById('article-conclusion-pt').textContent = data.conclusion_pt;
-  renderHashtags('article-hashtags-pt', data.hashtags_pt);
-  document.getElementById('article-text-pt').value = data.post_text_pt;
-  if (data.article_url_pt) renderArticleUrlBanner('article-url-banner-pt', data.article_url_pt);
-
-  // EN
-  document.getElementById('article-cover-en').src              = data.cover_en + '?t=' + Date.now();
-  document.getElementById('article-headline-en').textContent   = data.headline_en;
-  document.getElementById('article-subheadline-en').textContent= data.subheadline_en;
-  document.getElementById('article-reading-en').textContent    = `⏱ ${data.reading_time_en} min read`;
-  renderArticleSections('article-sections-en', data.sections_en);
-  document.getElementById('article-conclusion-en').textContent = data.conclusion_en;
-  renderHashtags('article-hashtags-en', data.hashtags_en);
-  document.getElementById('article-text-en').value = data.post_text_en;
-  if (data.article_url_en) renderArticleUrlBanner('article-url-banner-en', data.article_url_en);
+  document.getElementById('article-text-pt').innerHTML = buildArticleHtml(data, 'pt');
+  document.getElementById('article-text-en').innerHTML = buildArticleHtml(data, 'en');
+  renderCovers('covers-pt', data.covers_pt);
+  renderCovers('covers-en', data.covers_en);
 
   show('article-preview-section');
   document.getElementById('article-preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function buildArticleHtml(data, lang) {
+  const isPt = lang === 'pt';
+  const sections = isPt ? data.sections_pt : data.sections_en;
+  const conclusion = isPt ? data.conclusion_pt : data.conclusion_en;
+  const hashtags = isPt ? data.hashtags_pt : data.hashtags_en;
+  const headline = isPt ? data.headline_pt : data.headline_en;
+  const subheadline = isPt ? data.subheadline_pt : data.subheadline_en;
+
+  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function paragraphs(text) {
+    return (text||'').split(/\n\n+/).map(p => '<p>' + esc(p.trim()) + '</p>').join('');
+  }
+
+  let html = '<h1>' + esc(headline) + '</h1>';
+  html += '<div class="sub">' + esc(subheadline) + '</div>';
+
+  (sections || []).forEach(sec => {
+    html += '<h2>' + esc(sec.heading) + '</h2>';
+    html += paragraphs(sec.body);
+    if (sec.code_block) {
+      html += '<pre>' + esc(sec.code_block) + '</pre>';
+    }
+  });
+
+  if (conclusion) {
+    html += '<h2>' + (isPt ? 'Conclusão' : 'Conclusion') + '</h2>';
+    html += paragraphs(conclusion);
+  }
+
+  if (hashtags && hashtags.length) {
+    html += '<div class="hashtags">' + hashtags.map(h => '#' + h).join(' ') + '</div>';
+  }
+
+  return html;
+}
+
+function copyRichText(elId, btn) {
+  const el = document.getElementById(elId);
+  const html = el.innerHTML;
+  const plain = el.innerText;
+  const blob = new Blob([html], { type: 'text/html' });
+  const blobPlain = new Blob([plain], { type: 'text/plain' });
+  navigator.clipboard.write([
+    new ClipboardItem({ 'text/html': blob, 'text/plain': blobPlain })
+  ]).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copiado!';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--muted)'; }, 1800);
+  });
+}
+
+function renderCovers(containerId, urls) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  const labels = ['Estilo 1 — Grid', 'Estilo 2 — Split', 'Estilo 3 — Accent'];
+  (urls || []).forEach((src, i) => {
+    const ts = '?t=' + Date.now();
+    el.innerHTML += `
+      <div class="cover-option">
+        <img src="${src}${ts}" alt="Capa ${i+1}" onclick="openLb('${src}${ts}')">
+        <div class="cover-option-footer">
+          <span class="cover-option-label">${labels[i] || 'Estilo ' + (i+1)}</span>
+          <a class="btn-download" href="${src}" download="cover_v${i+1}.png">
+            &#11015; Download
+          </a>
+        </div>
+      </div>`;
+  });
+}
+
+function copyText(textareaId, btn) {
+  const val = document.getElementById(textareaId).value;
+  navigator.clipboard.writeText(val).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✓ Copiado!';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.style.borderColor = 'var(--border)';
+      btn.style.color = 'var(--muted)';
+    }, 2000);
+  });
 }
 
 function renderArticleUrlBanner(id, url) {
@@ -1506,8 +1722,8 @@ async function publishArticle() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         job_id:       currentJobId,
-        post_text_pt: document.getElementById('article-text-pt').value,
-        post_text_en: document.getElementById('article-text-en').value,
+        post_text_pt: document.getElementById('article-text-pt').innerText,
+        post_text_en: document.getElementById('article-text-en').innerText,
       })
     });
     const data = await r.json();
@@ -1526,14 +1742,12 @@ async function publishArticle() {
         if (queueIndex >= queueTopics.length) queueIndex = Math.max(0, queueTopics.length - 1);
         updateQueueUI();
       }
-      clearSelection();
-      hide('article-preview-section');
-      currentJobId = null;
       btn.disabled = false;
       btn.textContent = 'Publicar Artigo no LinkedIn';
       btn.style.background = '';
       btn.style.color = '';
-    }, 3000);
+      resetPage();
+    }, 2000);
 
   } catch (e) {
     showToast(e.message, 'error');
@@ -1546,6 +1760,166 @@ function setBusyArticle(busy) {
   const btn = document.getElementById('btn-generate');
   btn.disabled = busy;
   btn.textContent = busy ? 'Gerando Artigo...' : '✍️ Gerar Artigo';
+  if (!busy) show('topic-selector-card');
+}
+
+// ── Infographic Generate ─────────────────────────────────────────────────────
+async function startGenerateInfographic() {
+  if (!selectedTopic) return;
+
+  const topic = selectedTopic;
+  hide('topic-selector-card');
+  hide('infographic-preview-section');
+  setBusyInfographic(true);
+  resetSteps();
+  show('progress-section');
+  document.getElementById('progress-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  try {
+    const payload = topic._trending
+      ? { topic_id: 0, topic_name: topic.topic }
+      : { topic_id: topic.id };
+
+    const r = await fetch('/api/generate-infographic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao iniciar geração');
+
+    currentJobId = data.job_id;
+    pollTimer = setInterval(() => pollInfographicStatus(currentJobId), 1500);
+  } catch (e) {
+    setBusyInfographic(false);
+    hide('progress-section');
+    show('topic-selector-card');
+    showToast(e.message, 'error');
+  }
+}
+
+async function pollInfographicStatus(jobId) {
+  try {
+    const r = await fetch(`/api/status-infographic/${jobId}`);
+    const data = await r.json();
+    updateSteps(data.step || 0);
+
+    if (data.status === 'ready') {
+      clearInterval(pollTimer);
+      setBusyInfographic(false);
+      showInfographicPreview(data);
+    } else if (data.status === 'error') {
+      clearInterval(pollTimer);
+      setBusyInfographic(false);
+      hide('progress-section');
+      showToast('Erro: ' + data.error, 'error');
+    } else if (data.status === 'not_found') {
+      clearInterval(pollTimer);
+      setBusyInfographic(false);
+      hide('progress-section');
+      show('topic-selector-card');
+      showToast('Servidor reiniciou durante a geração. Tente novamente.', 'error');
+    }
+  } catch { /* network hiccup */ }
+}
+
+function showInfographicPreview(data) {
+  hide('progress-section');
+
+  document.getElementById('infographic-preview-topic-label').textContent = data.topic;
+  document.getElementById('infographic-text-pt').value = data.post_text_pt;
+  document.getElementById('infographic-text-en').value = data.post_text_en;
+
+  const fmtLabels = ['Vertical (1080x1920)', 'Quadrado (1080x1080)', 'Largo (1200x627)'];
+  renderInfographicImgs('infographic-imgs-pt', data.images_pt, fmtLabels);
+  renderInfographicImgs('infographic-imgs-en', data.images_en, fmtLabels);
+
+  show('infographic-preview-section');
+  document.getElementById('infographic-preview-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+let selectedInfographicIdx = 2; // default: wide
+
+function renderInfographicImgs(containerId, urls, labels) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  const suffixes = ['vertical', 'square', 'wide'];
+  (urls || []).forEach((src, i) => {
+    const ts = '?t=' + Date.now();
+    const sel = i === selectedInfographicIdx ? ' infographic-selected' : '';
+    el.innerHTML += `
+      <div class="cover-option${sel}" onclick="selectInfographicFormat(${i})" style="cursor:pointer;">
+        <img src="${src}${ts}" alt="Infographic ${i+1}" ondblclick="openLb('${src}${ts}')">
+        <div class="cover-option-footer">
+          <span class="cover-option-label">${labels[i] || 'Formato ' + (i+1)}</span>
+          <a class="btn-download" href="${src}" download="infographic_${suffixes[i]}.png" onclick="event.stopPropagation()">
+            &#11015; Download
+          </a>
+        </div>
+      </div>`;
+  });
+}
+
+function selectInfographicFormat(idx) {
+  selectedInfographicIdx = idx;
+  // Re-highlight in both grids
+  document.querySelectorAll('#infographic-imgs-pt .cover-option, #infographic-imgs-en .cover-option').forEach((el, i) => {
+    el.classList.toggle('infographic-selected', (i % 3) === idx);
+  });
+}
+
+async function publishInfographic() {
+  if (!currentJobId) return;
+
+  const btn = document.getElementById('btn-publish-infographic');
+  btn.disabled = true;
+  btn.textContent = 'Publicando...';
+
+  try {
+    const r = await fetch('/api/publish-infographic', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        job_id: currentJobId,
+        post_text_pt: document.getElementById('infographic-text-pt').value,
+        post_text_en: document.getElementById('infographic-text-en').value,
+        format_index: selectedInfographicIdx,
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao publicar');
+
+    btn.textContent = 'Publicado!';
+    btn.style.background = 'var(--green)';
+    btn.style.color = '#0D1117';
+    showToast('Infográficos publicados no LinkedIn!', 'success');
+
+    setTimeout(() => {
+      if (selectedTopic && !selectedTopic._trending) {
+        const idx = queueTopics.findIndex(x => x.id === selectedTopic.id);
+        if (idx >= 0) queueTopics.splice(idx, 1);
+        if (queueIndex >= queueTopics.length) queueIndex = Math.max(0, queueTopics.length - 1);
+        updateQueueUI();
+      }
+      btn.disabled = false;
+      btn.textContent = 'Publicar no LinkedIn';
+      btn.style.background = '';
+      btn.style.color = '';
+      resetPage();
+    }, 2000);
+
+  } catch (e) {
+    showToast(e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Publicar no LinkedIn';
+  }
+}
+
+function setBusyInfographic(busy) {
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = busy;
+  btn.textContent = busy ? 'Gerando Infográfico...' : '📊 Gerar Infográfico';
   if (!busy) show('topic-selector-card');
 }
 

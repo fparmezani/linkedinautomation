@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1200px; height: 627px;
+  background: #0D1117;
+  font-family: 'Inter', sans-serif;
+  color: #E6EDF3;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Full gradient background */
+.bg-gradient {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(88,166,255,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(188,140,255,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 80%, rgba(63,185,80,0.05) 0%, transparent 50%);
+}
+
+/* Horizontal lines decoration */
+.lines {
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 39px,
+    rgba(88,166,255,0.03) 39px,
+    rgba(88,166,255,0.03) 40px
+  );
+}
+
+/* Left accent bar — thick */
+.accent-left {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #58A6FF 0%, #BC8CFF 50%, #3FB950 100%);
+}
+
+/* Main content — centered */
+.content {
+  position: absolute; inset: 0;
+  padding: 56px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #BC8CFF;
+  padding: 5px 14px;
+  border: 1px solid rgba(188,140,255,0.4);
+  border-radius: 20px;
+  background: rgba(188,140,255,0.06);
+}
+
+.dot-sep {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #30363D;
+}
+
+.reading-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #8B949E;
+}
+
+.headline {
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1.1;
+  max-width: 900px;
+  color: #E6EDF3;
+  letter-spacing: -0.02em;
+}
+
+/* Gradient underline on last word effect */
+.headline-highlight {
+  position: relative;
+  display: inline;
+}
+.headline-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #58A6FF, #BC8CFF);
+  border-radius: 2px;
+}
+
+.subheadline {
+  font-size: 17px;
+  color: #8B949E;
+  line-height: 1.6;
+  max-width: 750px;
+}
+
+/* Bottom row */
+.bottom-row {
+  position: absolute;
+  bottom: 36px; left: 80px; right: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.author-block {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, #BC8CFF, #58A6FF);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 800; color: #0D1117;
+}
+
+.author-name  { font-size: 14px; font-weight: 700; color: #E6EDF3; }
+.author-handle { font-size: 12px; color: #BC8CFF; font-family: 'JetBrains Mono', monospace; }
+
+.tag-list {
+  display: flex; gap: 8px;
+}
+
+.mini-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: #58A6FF;
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.15);
+  border-radius: 4px;
+  padding: 4px 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+<div class="lines"></div>
+<div class="accent-left"></div>
+
+<div class="content">
+  <div class="top-row">
+    <span class="tag">{{ cover_tag }}</span>
+    <span class="dot-sep"></span>
+    <span class="reading-badge">{{ reading_time_min }} min read</span>
+  </div>
+
+  <div class="headline">{{ headline }}</div>
+  <div class="subheadline">{{ subheadline }}</div>
+</div>
+
+<div class="bottom-row">
+  <div class="author-block">
+    <div class="avatar">{{ author_initials }}</div>
+    <div>
+      <div class="author-name">{{ author_name }}</div>
+      <div class="author-handle">{{ author_handle }}</div>
+    </div>
+  </div>
+  <div class="tag-list">
+    <span class="mini-tag">C#</span>
+    <span class="mini-tag">.NET 8</span>
+    <span class="mini-tag">AI</span>
+  </div>
+</div>
+
+</body>
+</html>

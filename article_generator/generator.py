@@ -68,18 +68,15 @@ Rules:
 - headline: bold, hook-driven, max 80 chars — speaks directly to a developer pain point
 - subheadline: 1-2 sentences expanding the headline, practical promise
 - cover_tag: short label e.g. "IA + .NET", "Semantic Kernel", "GitHub Copilot", "ML.NET"
-- reading_time_min: realistic estimate (typically 5-8 min for a 1200-1800 word article)
+- reading_time_min: realistic estimate (typically 4-6 min for a 800-1200 word article)
 - post_text: the LinkedIn post that will accompany the article link. 3 short punchy paragraphs,
   developer voice. Ends with a hook to read the full article. NO hashtags here (they go separately).
-- sections: 5 to 7 sections, each with:
+- sections: 3 to 4 sections, each with:
     - heading: clear, descriptive, max 60 chars
-    - body: 2-4 solid paragraphs with real developer insight. Write in first person occasionally
-      ("I use this in production", "in my team we..."). Include concrete examples,
-      gotchas, and recommendations. Min 120 words per section.
-    - code_block: valid modern C# (.NET 8+) showing AI integration where applicable.
-      Max 20 lines, realistic and production-quality. null if not applicable.
-      CRITICAL: inside JSON strings, use \\n for newlines and \\" for quotes — the code_block
-      value must be a single-line JSON string with all special chars properly escaped.
+    - body: 1-2 paragraphs with real developer insight. First person occasionally.
+      Concrete examples and recommendations. 80-120 words per section.
+    - code_block: short C# (.NET 8+) snippet, max 12 lines. null if not applicable.
+      CRITICAL: inside JSON strings, use \\n for newlines and \\" for quotes.
     - code_language: "csharp", "json", "bash" or null
 - conclusion: 1-2 paragraphs wrapping up key takeaways. Personal tone.
 - cta: "{cta}"
@@ -110,7 +107,39 @@ def _safe_parse_json(raw: str) -> dict:
         except json.JSONDecodeError:
             pass
 
-    # 4. If still failing, re-ask Claude to fix the JSON
+    # 4. Try to repair truncated JSON by closing open brackets
+    if start != -1:
+        fragment = raw[start:]
+        # Close any open strings, arrays, objects
+        in_str = False
+        escape = False
+        stack = []
+        for ch in fragment:
+            if escape:
+                escape = False
+                continue
+            if ch == '\\' and in_str:
+                escape = True
+                continue
+            if ch == '"' and not escape:
+                in_str = not in_str
+                continue
+            if in_str:
+                continue
+            if ch in ('{', '['):
+                stack.append('}' if ch == '{' else ']')
+            elif ch in ('}', ']') and stack:
+                stack.pop()
+
+        if in_str:
+            fragment += '"'
+        # Close remaining open structures
+        fragment += ''.join(reversed(stack))
+        try:
+            return json.loads(fragment)
+        except json.JSONDecodeError:
+            pass
+
     raise ValueError(f"Could not parse JSON response. Raw (first 300 chars): {raw[:300]}")
 
 
@@ -120,7 +149,7 @@ def generate_article(topic: str, lang: str) -> dict:
     # Use extended thinking budget to get clean, complete JSON
     message = _get_client().messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=6000,
+        max_tokens=5000,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = message.content[0].text.strip()

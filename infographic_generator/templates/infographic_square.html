@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px; height: 1080px;
+  background: #0D1117;
+  font-family: 'Inter', sans-serif;
+  color: #E6EDF3;
+  overflow: hidden;
+  position: relative;
+}
+
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(88,166,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88,166,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.accent-left {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  background: linear-gradient(180deg, #58A6FF, #BC8CFF, #3FB950);
+}
+
+.content {
+  position: relative;
+  padding: 48px 52px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.tag {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: #BC8CFF;
+  padding: 5px 14px;
+  border: 1px solid rgba(188,140,255,0.4);
+  border-radius: 20px;
+  background: rgba(188,140,255,0.06);
+}
+
+.author-mini {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.avatar-sm {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #58A6FF, #BC8CFF);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 800; color: #0D1117;
+}
+
+.author-name-sm { font-size: 13px; font-weight: 600; color: #8B949E; }
+
+.title {
+  font-size: 38px; font-weight: 900;
+  line-height: 1.12; letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  color: #E6EDF3;
+}
+
+.blocks-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.block {
+  background: rgba(22,27,34,0.9);
+  border: 1px solid #30363D;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.block:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.block-top {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+
+.block-icon { font-size: 24px; }
+
+.block-stat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px; font-weight: 800;
+  color: #58A6FF;
+}
+
+.block:nth-child(2) .block-stat,
+.block:nth-child(4) .block-stat { color: #BC8CFF; }
+
+.block:nth-child(3) .block-stat,
+.block:nth-child(5) .block-stat { color: #3FB950; }
+
+.block-label {
+  font-size: 14px; font-weight: 700;
+  color: #E6EDF3;
+}
+
+.block-detail {
+  font-size: 12px; color: #8B949E;
+  margin-top: 4px; line-height: 1.4;
+}
+
+.bottom-bar {
+  margin-top: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #21262D;
+}
+
+.tip-inline {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: #3FB950; font-weight: 600;
+  max-width: 65%;
+}
+
+.footer-cta {
+  font-size: 12px; color: #8B949E;
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="accent-left"></div>
+
+<div class="content">
+  <div class="header">
+    <span class="tag">{{ cover_tag }}</span>
+    <div class="author-mini">
+      <div class="avatar-sm">{{ author_initials }}</div>
+      <span class="author-name-sm">{{ author_name }}</span>
+    </div>
+  </div>
+
+  <div class="title">{{ title }}</div>
+
+  <div class="blocks-grid">
+    {% for b in blocks %}
+    <div class="block">
+      <div class="block-top">
+        <span class="block-icon">{{ b.icon }}</span>
+        <span class="block-stat">{{ b.stat }}</span>
+      </div>
+      <div class="block-label">{{ b.label }}</div>
+      <div class="block-detail">{{ b.detail }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="bottom-bar">
+    <div class="tip-inline">💡 {{ tip }}</div>
+    <div class="footer-cta">{{ footer_cta }}</div>
+  </div>
+</div>
+
+</body>
+</html>
