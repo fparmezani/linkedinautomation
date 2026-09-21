@@ -37,6 +37,11 @@
       "id": 13,
       "topic": "Prompt engineering best practices for C# devs",
       "niche": "AI Skills"
+    },
+    {
+      "id": 23,
+      "topic": "AI code review: what Copilot catches that we miss",
+      "niche": "Productivity"
     }
   ],
   "available": [
@@ -74,11 +79,6 @@
       "id": 22,
       "topic": "Semantic Kernel plugins: extending AI with your C# code",
       "niche": "AI Framework"
-    },
-    {
-      "id": 23,
-      "topic": "AI code review: what Copilot catches that we miss",
-      "niche": "Productivity"
     },
     {
       "id": 24,

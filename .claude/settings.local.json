@@ -6,7 +6,10 @@
       "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\carousel_generator\\\\templates\")",
       "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\carousel_generator\\\\assets\")",
       "PowerShell(New-Item -ItemType Directory -Force -Path \"C:\\\\Projetos\\\\LinkedinAutomation\\\\linkedin_publisher\")",
-      "Bash(not exist *)"
+      "Bash(not exist *)",
+      "Bash(pip install *)",
+      "Bash(python create_hero_mint_video.py)",
+      "Bash(python create_hero_mint_video_premium.py)"
     ]
   }
 }

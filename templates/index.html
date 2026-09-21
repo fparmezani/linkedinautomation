@@ -880,8 +880,37 @@ textarea.post-text:focus { outline: none; border-color: var(--blue); }
     <!-- Lista de 10 opções -->
     <div id="topic-options" class="topic-options hidden"></div>
 
-    <!-- Divisor -->
-    <div id="queue-divider" style="display:flex;align-items:center;gap:12px;margin:18px 0 14px;">
+    <!-- Divisor 1 -->
+    <div id="queue-divider-1" style="display:flex;align-items:center;gap:12px;margin:18px 0 14px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <span style="font-size:12px;color:var(--muted);white-space:nowrap;">ou digite sua ideia</span>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <!-- Campo de entrada de ideia -->
+    <div style="margin-bottom:14px;">
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="text" id="idea-input" placeholder="Ex: Como usar GitHub Copilot em ASP.NET..."
+          style="flex:1;background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 14px;font-family:'Inter',sans-serif;font-size:14px;transition:border-color .15s;"
+          onkeypress="if(event.key==='Enter') generateTitlesFromIdea();"
+          onfocus="this.style.borderColor='var(--blue)'"
+          onblur="this.style.borderColor='var(--border)'">
+        <button class="btn-research" id="btn-generate-titles" onclick="generateTitlesFromIdea()" style="white-space:nowrap;">
+          &#128161; Gerar Titulos
+        </button>
+      </div>
+    </div>
+
+    <!-- Spinner de loading para títulos -->
+    <div id="titles-loading" class="hidden" style="color:var(--muted);font-size:14px;margin-top:14px;margin-bottom:14px;">
+      <span class="spinner">&#9696;</span>&nbsp; Gerando 5 títulos com Claude...
+    </div>
+
+    <!-- Lista de títulos gerados -->
+    <div id="generated-titles" class="topic-options hidden"></div>
+
+    <!-- Divisor 2 -->
+    <div id="queue-divider-2" style="display:flex;align-items:center;gap:12px;margin:18px 0 14px;">
       <div style="flex:1;height:1px;background:var(--border);"></div>
       <span style="font-size:12px;color:var(--muted);white-space:nowrap;">ou escolha da fila manual</span>
       <div style="flex:1;height:1px;background:var(--border);"></div>
@@ -1489,6 +1518,83 @@ function escHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// ── Generate Titles from Idea ─────────────────────────────────────────────────
+async function generateTitlesFromIdea() {
+  const input = document.getElementById('idea-input');
+  const idea = input.value.trim();
+
+  if (!idea) {
+    showToast('Digite uma ideia para continuar', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-generate-titles');
+  btn.disabled = true;
+  btn.textContent = 'Gerando...';
+
+  hide('generated-titles');
+  show('titles-loading');
+
+  try {
+    const r = await fetch('/api/generate-titles', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ idea, content_type: contentType })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Erro ao gerar títulos');
+    showGeneratedTitles(data);
+  } catch (e) {
+    hide('titles-loading');
+    btn.disabled = false;
+    btn.textContent = '💡 Gerar Titulos';
+    showToast('Erro: ' + e.message, 'error');
+  }
+}
+
+function showGeneratedTitles(data) {
+  const container = document.getElementById('generated-titles');
+  container.innerHTML = '';
+
+  const titles = data.titles || [];
+  if (!titles.length) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">Nenhum título gerado. Tente novamente com uma ideia diferente.</div>';
+    hide('titles-loading');
+    show('generated-titles');
+    return;
+  }
+
+  titles.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'topic-option';
+
+    card.innerHTML = `
+      <div class="topic-rank">#${t.rank}</div>
+      <div class="topic-option-body">
+        <div class="topic-option-name">${escHtml(t.title)}</div>
+        <div class="topic-option-reasoning">${escHtml(t.description || '')}</div>
+      </div>
+      <div class="selected-indicator">&#10003;</div>
+    `;
+
+    card.addEventListener('click', () => {
+      document.querySelectorAll('#generated-titles .topic-option').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      confirmSelection({ id: 0, topic: t.title, _trending: true });
+      document.getElementById('idea-input').value = '';
+    });
+
+    container.appendChild(card);
+  });
+
+  hide('titles-loading');
+  show('generated-titles');
+
+  const btn = document.getElementById('btn-generate-titles');
+  btn.disabled = false;
+  btn.textContent = '💡 Gerar Titulos';
 }
 
 // ── Content Type ─────────────────────────────────────────────────────────────

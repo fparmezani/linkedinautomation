@@ -6,6 +6,9 @@ Fontes:
   - Reddit      (r/dotnet, r/csharp, r/MachineLearning filtrado por .NET)
   - Hacker News (queries: semantic kernel, copilot csharp, dotnet AI, ML.NET)
   - Microsoft DevBlog (.NET + AI posts recentes)
+  - GitHub Trending (repos C# em alta)
+  - Stack Overflow (perguntas populares C# + AI)
+  - Hashnode     (artigos .NET + AI)
   - Google Trends (queries em alta — requer pytrends, falha silenciosa)
 """
 
@@ -165,6 +168,112 @@ def _fetch_google_trends() -> list:
         return []
 
 
+def _fetch_github_trending() -> list:
+    """Busca repos C# em trending no GitHub."""
+    items = []
+    try:
+        r = requests.get(
+            "https://api.github.com/search/repositories?q=language:csharp+topic:ai+topic:machine-learning&sort=stars&order=desc&per_page=10",
+            headers={**_HEADERS, "Accept": "application/vnd.github.v3+json"},
+            timeout=_HTTP_TIMEOUT
+        )
+        if r.ok:
+            for repo in r.json().get("items", [])[:10]:
+                items.append({
+                    "title":  f"{repo['name']}: {repo.get('description', '')[:80]}",
+                    "points": repo.get("stargazers_count", 0),
+                    "source": "GitHub Trending",
+                })
+    except Exception:
+        pass
+    # Also search for recent AI + dotnet repos
+    try:
+        r = requests.get(
+            "https://api.github.com/search/repositories?q=dotnet+AI+pushed:>2024-01-01&sort=updated&order=desc&per_page=10",
+            headers={**_HEADERS, "Accept": "application/vnd.github.v3+json"},
+            timeout=_HTTP_TIMEOUT
+        )
+        if r.ok:
+            for repo in r.json().get("items", [])[:8]:
+                items.append({
+                    "title":  f"{repo['name']}: {repo.get('description', '')[:80]}",
+                    "points": repo.get("stargazers_count", 0),
+                    "source": "GitHub Trending",
+                })
+    except Exception:
+        pass
+    seen, unique = set(), []
+    for it in items:
+        if it["title"] not in seen:
+            seen.add(it["title"])
+            unique.append(it)
+    return sorted(unique, key=lambda x: x["points"], reverse=True)[:12]
+
+
+def _fetch_stackoverflow() -> list:
+    """Busca perguntas populares recentes no SO sobre C# + AI."""
+    items = []
+    tags_combos = ["c%23;artificial-intelligence", "c%23;openai", ".net;machine-learning",
+                   "c%23;azure-cognitive-services", "semantic-kernel"]
+    for tags in tags_combos:
+        try:
+            r = requests.get(
+                f"https://api.stackexchange.com/2.3/questions?order=desc&sort=activity&tagged={tags}&site=stackoverflow&pagesize=5&filter=default",
+                headers=_HEADERS, timeout=_HTTP_TIMEOUT
+            )
+            if r.ok:
+                for q in r.json().get("items", [])[:4]:
+                    items.append({
+                        "title":  q.get("title", ""),
+                        "points": q.get("score", 0),
+                        "source": "Stack Overflow",
+                    })
+        except Exception:
+            pass
+    seen, unique = set(), []
+    for it in items:
+        if it["title"] not in seen:
+            seen.add(it["title"])
+            unique.append(it)
+    return sorted(unique, key=lambda x: x["points"], reverse=True)[:10]
+
+
+def _fetch_hashnode() -> list:
+    """Busca artigos em alta no Hashnode sobre .NET + AI."""
+    items = []
+    try:
+        query = {
+            "query": """query {
+                searchPostsOfFeed(first: 10, filter: { query: "dotnet AI csharp" }) {
+                    edges {
+                        node {
+                            title
+                            reactionCount
+                        }
+                    }
+                }
+            }"""
+        }
+        r = requests.post(
+            "https://gql.hashnode.com",
+            json=query,
+            headers={**_HEADERS, "Content-Type": "application/json"},
+            timeout=_HTTP_TIMEOUT
+        )
+        if r.ok:
+            edges = r.json().get("data", {}).get("searchPostsOfFeed", {}).get("edges", [])
+            for edge in edges[:8]:
+                node = edge.get("node", {})
+                items.append({
+                    "title":  node.get("title", ""),
+                    "points": node.get("reactionCount", 0),
+                    "source": "Hashnode",
+                })
+    except Exception:
+        pass
+    return items[:8]
+
+
 # ── Claude analysis ───────────────────────────────────────────────────────────
 
 def _build_prompt(sources: dict, used_topics: list) -> str:
@@ -177,7 +286,7 @@ def _build_prompt(sources: dict, used_topics: list) -> str:
             lines.append(line)
         return "\n".join(lines) if lines else "  (sem dados)"
 
-    used_str = "\n".join(f"  - {t}" for t in used_topics[-15:]) if used_topics else "  (nenhum)"
+    used_str = "\n".join(f"  - {t}" for t in used_topics) if used_topics else "  (nenhum)"
 
     return f"""You are a content strategist for a LinkedIn account focused on a very specific niche:
 
@@ -200,10 +309,19 @@ Analyze the trending signals below and return the 10 BEST carousel post topics f
 ─── MICROSOFT DEVBLOG (recent posts) ───
 {fmt_list(sources.get('msdevblog', []))}
 
+─── GITHUB TRENDING (C# + AI repos) ───
+{fmt_list(sources.get('github', []), extra='points')}
+
+─── STACK OVERFLOW (popular C# + AI questions) ───
+{fmt_list(sources.get('stackoverflow', []), extra='points')}
+
+─── HASHNODE (articles) ───
+{fmt_list(sources.get('hashnode', []), extra='points')}
+
 ─── GOOGLE TRENDS (rising queries) ───
 {fmt_list(sources.get('trends', []))}
 
-─── Already posted recently (DO NOT repeat) ───
+─── Already posted / queued (DO NOT suggest ANY of these) ───
 {used_str}
 
 RULES:
@@ -218,7 +336,8 @@ RULES:
    - Building RAG (Retrieval-Augmented Generation) systems in C#
 2. Topics must be practical and actionable — real C# code examples possible
 3. Trending signal from the sources above should inform choices
-4. Do NOT repeat topics already posted
+4. CRITICAL: Do NOT repeat or rephrase ANY topic from the "Already posted / queued" list above.
+   If a topic is similar to one already listed, skip it entirely. Choose a DIFFERENT angle.
 5. Each topic must work as a 6-slide carousel
 
 Return ONLY valid JSON, no markdown:
@@ -252,6 +371,25 @@ def _ask_claude(prompt: str) -> dict:
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
+def _is_too_similar(new_topic: str, existing: list, threshold: float = 0.55) -> bool:
+    """Check if new_topic is too similar to any existing topic using word overlap."""
+    new_words = set(new_topic.lower().split())
+    # Remove very common words
+    stop = {"a", "an", "the", "in", "on", "for", "to", "with", "and", "or", "of",
+            "your", "how", "using", "use", "com", "para", "como", "seu", "sua", "no", "na", "de", "do"}
+    new_words -= stop
+    if not new_words:
+        return False
+    for existing_topic in existing:
+        ex_words = set(existing_topic.lower().split()) - stop
+        if not ex_words:
+            continue
+        overlap = len(new_words & ex_words) / min(len(new_words), len(ex_words))
+        if overlap >= threshold:
+            return True
+    return False
+
+
 def research_trending_topic(used_topics: list = None) -> dict:
     """
     Pesquisa tendencias no nicho C# .NET + AI e retorna 10 opcoes de topico.
@@ -277,16 +415,28 @@ def research_trending_topic(used_topics: list = None) -> dict:
     print("  Buscando MS DevBlog...",    end=" ", flush=True)
     msdevblog = _fetch_ms_devblog();  print(f"{len(msdevblog)} posts")
 
+    print("  Buscando GitHub Trending...", end=" ", flush=True)
+    github    = _fetch_github_trending(); print(f"{len(github)} repos")
+
+    print("  Buscando Stack Overflow...", end=" ", flush=True)
+    stackoverflow = _fetch_stackoverflow(); print(f"{len(stackoverflow)} perguntas")
+
+    print("  Buscando Hashnode...",       end=" ", flush=True)
+    hashnode  = _fetch_hashnode();        print(f"{len(hashnode)} artigos")
+
     print("  Buscando Google Trends...", end=" ", flush=True)
     trends    = _fetch_google_trends()
     print(f"{len(trends)} queries" if trends else "indisponivel")
 
     sources = {
-        "devto":     devto,
-        "reddit":    reddit,
-        "hn":        hn,
-        "msdevblog": msdevblog,
-        "trends":    trends,
+        "devto":         devto,
+        "reddit":        reddit,
+        "hn":            hn,
+        "msdevblog":     msdevblog,
+        "github":        github,
+        "stackoverflow": stackoverflow,
+        "hashnode":      hashnode,
+        "trends":        trends,
     }
 
     print("  Analisando com Claude...", end=" ", flush=True)
@@ -295,11 +445,14 @@ def research_trending_topic(used_topics: list = None) -> dict:
     print("ok")
 
     result["raw_sources"] = {
-        "devto":     [i["title"] for i in devto[:5]],
-        "reddit":    [i["title"] for i in reddit[:5]],
-        "hn":        [i["title"] for i in hn[:5]],
-        "msdevblog": [i["title"] for i in msdevblog[:5]],
-        "trends":    [i["title"] for i in trends[:5]],
+        "devto":         [i["title"] for i in devto[:5]],
+        "reddit":        [i["title"] for i in reddit[:5]],
+        "hn":            [i["title"] for i in hn[:5]],
+        "msdevblog":     [i["title"] for i in msdevblog[:5]],
+        "github":        [i["title"] for i in github[:5]],
+        "stackoverflow": [i["title"] for i in stackoverflow[:5]],
+        "hashnode":      [i["title"] for i in hashnode[:5]],
+        "trends":        [i["title"] for i in trends[:5]],
     }
 
     # Normalise: garante que sempre existe "topics"
@@ -311,6 +464,90 @@ def research_trending_topic(used_topics: list = None) -> dict:
             "reasoning": result.get("reasoning", ""),
             "sources":   result.get("sources_used", []),
         }]
+
+    # Post-filter: remove tópicos similares a já usados/fila (Claude nem sempre respeita)
+    if used_topics:
+        filtered = [t for t in result.get("topics", [])
+                    if not _is_too_similar(t["topic"], used_topics)]
+        if filtered:
+            result["topics"] = filtered
+            # Re-rank
+            for i, t in enumerate(result["topics"], 1):
+                t["rank"] = i
+
+    return result
+
+
+def generate_titles_from_idea(idea: str, content_type: str = "post") -> dict:
+    """
+    Generates 5 alternative titles/topics from a user's idea customized by content type.
+
+    Returns:
+    {
+        "titles": [
+            {"rank": 1, "title": "...", "description": "..."},
+            ...5 items
+        ]
+    }
+    """
+    # Customize guidelines based on content type
+    if content_type == "article":
+        type_desc = "deep-dive technical articles (suitable for LinkedIn articles or Substack posts)"
+        specific_rules = """1. Are practical and detailed, suitable for an in-depth article or tutorial with code snippets
+2. Focus on conceptual clarity, best practices, or step-by-step implementations
+3. Fit within the niche of C# / .NET enhanced by AI"""
+    elif content_type == "infographic":
+        type_desc = "visual infographics (suitable for cheat sheets, diagrams, comparisons, or step-by-step visual flows)"
+        specific_rules = """1. Are visual-friendly, structured around steps, checklists, architecture, or comparisons (e.g. 'A vs B', '5 steps to...', 'Cheat Sheet')
+2. Can be summarized in a single, high-impact diagram or visual table
+3. Fit within the niche of C# / .NET enhanced by AI"""
+    else:  # post
+        type_desc = "carousel posts (suitable for a 6-slide LinkedIn carousel)"
+        specific_rules = """1. Are highly practical and actionable, designed to be digested in a slide-by-slide format
+2. Can be explained well in a 6-slide visual deck
+3. Fit within the niche of C# / .NET enhanced by AI"""
+
+    prompt = f"""You are a content strategist for a LinkedIn account focused on C# .NET development with AI.
+
+The audience is mid-to-senior C# / .NET developers who want to use AI tools to write better code.
+
+A user provided this idea:
+"{idea}"
+
+Based on this idea, generate 5 different SPECIFIC titles/topics for {type_desc} that:
+{specific_rules}
+4. Are distinct from each other (different angles or depths)
+5. Are concise (max 60 characters per title)
+
+Return ONLY valid JSON, no markdown:
+{{
+  "titles": [
+    {{
+      "rank": 1,
+      "title": "specific actionable title (max 60 chars)",
+      "description": "brief explanation of what this topic covers (max 100 chars)"
+    }},
+    ...5 items total
+  ]
+}}
+"""
+
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    msg = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = msg.content[0].text.strip()
+    raw = re.sub(r"^```(?:json)?\s*", "", raw)
+    raw = re.sub(r"\s*```$", "", raw)
+    result = json.loads(raw)
+
+    # Ensure exactly 5 titles
+    result["titles"] = result.get("titles", [])[:5]
+    for i, t in enumerate(result["titles"], 1):
+        t["rank"] = i
+
     return result
 
 

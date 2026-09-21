@@ -18,7 +18,7 @@ load_dotenv(Path(__file__).parent / ".env", override=True)
 from content_generator.generator  import load_topics, generate_carousel, mark_topic_used
 from carousel_generator.renderer  import render_carousel
 from linkedin_publisher.publisher  import publish_carousel, publish_article
-from topic_researcher              import research_trending_topic
+from topic_researcher              import research_trending_topic, generate_titles_from_idea
 from article_generator.generator   import generate_article
 from article_generator.cover_renderer import render_article_covers
 from substack_publisher.publisher  import publish_to_substack
@@ -193,6 +193,24 @@ def api_research_status(job_id):
     return jsonify(job)
 
 
+@app.route("/api/generate-titles", methods=["POST"])
+@login_required
+def api_generate_titles():
+    """Generate 5 alternative titles from a user's idea."""
+    body = request.get_json() or {}
+    idea = body.get("idea", "").strip()
+    content_type = body.get("content_type", "post").strip()
+
+    if not idea:
+        return jsonify({"error": "Ideia é obrigatória"}), 400
+
+    try:
+        result = generate_titles_from_idea(idea, content_type=content_type)
+        return jsonify(result)
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 @app.route("/api/topics")
 @login_required
 def api_topics():
@@ -218,6 +236,13 @@ def api_generate():
 
     # topic_id=0 significa topico trending passado via topic_name
     topic_name = body.get("topic_name", "")
+    
+    # Coerce topic_id to int if possible to avoid type mismatches (str vs int)
+    try:
+        topic_id = int(topic_id)
+    except (TypeError, ValueError):
+        pass
+
     if topic_id == 0 and topic_name:
         topic = {"id": 0, "topic": topic_name, "_trending": True}
     else:
@@ -308,6 +333,13 @@ def api_generate_article():
         return jsonify({"error": "Sem topicos disponíveis."}), 400
 
     topic_name = body.get("topic_name", "")
+    
+    # Coerce topic_id to int if possible to avoid type mismatches (str vs int)
+    try:
+        topic_id = int(topic_id)
+    except (TypeError, ValueError):
+        pass
+
     if topic_id == 0 and topic_name:
         topic = {"id": 0, "topic": topic_name, "_trending": True}
     else:
@@ -468,6 +500,13 @@ def api_generate_infographic():
         return jsonify({"error": "Sem topicos disponíveis."}), 400
 
     topic_name = body.get("topic_name", "")
+    
+    # Coerce topic_id to int if possible to avoid type mismatches (str vs int)
+    try:
+        topic_id = int(topic_id)
+    except (TypeError, ValueError):
+        pass
+
     if topic_id == 0 and topic_name:
         topic = {"id": 0, "topic": topic_name, "_trending": True}
     else:
